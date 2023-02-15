@@ -9,17 +9,17 @@ class Ping
     public String setIpAddress() throws IOException
     {
 
-        BufferedReader bfr = new BufferedReader(new InputStreamReader(System.in));
+        BufferedReader bReader = new BufferedReader(new InputStreamReader(System.in));
 
         System.out.println("Enter IP address to Ping");
 
-        String ipAddress = bfr.readLine();
+        String ipAddress = bReader.readLine();
 
         return ipAddress;
     }
 
 
-    public static void main(String[] args) throws IOException,NullPointerException
+    public static void main(String[] args)
     {
         Ping ping_command = new Ping();
 
@@ -28,18 +28,24 @@ class Ping
             throw new NullPointerException();
         }
 
-        String ip = ping_command.setIpAddress();
+        String ipAddress="";
 
-        String pingCmd = "ping -c 3 -w 10 " + ip;
+        Runtime runtime = null;
 
-        Runtime runtime = Runtime.getRuntime();
-
-        Process p = runtime.exec(pingCmd);
-
-        BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+        BufferedReader inputReader = null;
 
         try
         {
+            ipAddress = ping_command.setIpAddress();
+
+            String pingCmd = "ping -c 3 -w 10 " + ipAddress;
+
+            runtime = Runtime.getRuntime();
+
+            Process commandExec = runtime.exec(pingCmd);
+
+            inputReader = new BufferedReader(new InputStreamReader(commandExec.getInputStream()));
+
             String pingResult = "";
 
             if(runtime == null)
@@ -47,9 +53,9 @@ class Ping
                 throw new NullPointerException();
             }
 
-            String inputLine;
+            String inputLine="";
 
-            while ((inputLine = in.readLine()) != null)
+            while ((inputLine = inputReader.readLine()) != null)
             {
 
                 pingResult += inputLine + "\n";
@@ -125,7 +131,7 @@ class Ping
         {
             try
             {
-                in.close();
+                inputReader.close();
             }
             catch (IOException e)
             {
