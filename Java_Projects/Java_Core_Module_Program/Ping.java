@@ -64,7 +64,7 @@ class Ping
 
             }
 
-            System.out.println(pingResult);
+//            System.out.println(pingResult);
 
             if (pingResult.trim().isEmpty())
             {
@@ -78,38 +78,38 @@ class Ping
 
             else
             {
-                String[] splited = pingResult.split("---");
+                String[] splited_by_hyphen = pingResult.split("---");
 
-                String[] splited1 = splited[2].split("\n");
+                String[] splited_by_line = splited_by_hyphen[2].split("\n");
 
-                String[] splited2 = splited1[1].split(",");
+                String[] splited_by_comma = splited_by_line[1].split(",");
 
                 System.out.println("\n");
 
                 System.out.println("Status :- Host is Reachable");
 
-                if(splited[2] != null)
+                if(splited_by_hyphen[2] != null)
                 {
-                    System.out.println("RTT Minimum value is :- " + splited1[2].split("/")[3].split("=")[1].trim());
+                    System.out.println("RTT Minimum value is :- " + splited_by_line[2].split("/")[3].split("=")[1].trim());
 
-                    System.out.println("RTT Average value is :- " + splited1[2].split("/")[4].trim());
+                    System.out.println("RTT Average value is :- " + splited_by_line[2].split("/")[4].trim());
 
-                    System.out.println("RTT Maximum value is :- " + splited1[2].split("/")[5].trim());
+                    System.out.println("RTT Maximum value is :- " + splited_by_line[2].split("/")[5].trim());
                 }
 
-                if(splited2[0] != null)
+                if(splited_by_comma[0] != null)
                 {
-                    System.out.println("Total Packets Transmitted :- " + splited2[0].trim().split(" ")[0]);
+                    System.out.println("Total Packets Transmitted :- " + splited_by_comma[0].trim().split(" ")[0]);
                 }
 
-                if(splited2[1] != null)
+                if(splited_by_comma[1] != null)
                 {
-                    System.out.println("Total Packets Received :- " + splited2[1].trim().split(" ")[0]);
+                    System.out.println("Total Packets Received :- " + splited_by_comma[1].trim().split(" ")[0]);
                 }
 
-                if(splited2[2] != null)
+                if(splited_by_comma[2] != null)
                 {
-                    System.out.println("Total Packets Loss :- " + splited2[2].trim().split(" ")[0]);
+                    System.out.println("Total Packets Loss :- " + splited_by_comma[2].trim().split(" ")[0]);
                 }
             }
 
