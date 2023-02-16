@@ -23,9 +23,16 @@ class Ping
     {
         Ping ping_command = new Ping();
 
-        if(ping_command == null)
+        try
         {
-            throw new NullPointerException();
+            if(ping_command == null)
+            {
+                throw new NullPointerException();
+            }
+        }
+        catch(NullPointerException e)
+        {
+            System.out.println(e);
         }
 
         String ipAddress="";
@@ -114,16 +121,8 @@ class Ping
             }
 
         }
-        catch (IOException e)
+        catch (Exception e) //generic exception
         {
-            System.out.println("Inside the IO Exception");
-
-            System.out.println(e);
-        }
-        catch (NullPointerException e)
-        {
-            System.out.println("Inside the Null Pointer exception");
-
             System.out.println(e);
         }
 
@@ -131,7 +130,10 @@ class Ping
         {
             try
             {
-                inputReader.close();
+                if(inputReader==null)
+                {
+                    inputReader.close();
+                }
             }
             catch (IOException e)
             {
