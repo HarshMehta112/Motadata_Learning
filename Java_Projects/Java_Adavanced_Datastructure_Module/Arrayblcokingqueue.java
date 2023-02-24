@@ -1,5 +1,5 @@
 
-import java.util.ArrayList;
+import java.util.*;
 import java.util.concurrent.*;
 public class Arrayblcokingqueue {
 
@@ -25,6 +25,7 @@ public class Arrayblcokingqueue {
         System.out.println(queue.take());
 
         System.out.println(queue.parallelStream());
+
 
 
     }

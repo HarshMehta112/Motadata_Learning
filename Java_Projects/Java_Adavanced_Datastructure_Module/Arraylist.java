@@ -12,7 +12,9 @@ public class Arraylist {
         ArrayList<Integer> arr = new ArrayList<Integer>();
 
         arr.add(1);
+
         arr.add(2);
+
         arr.add(3);
 
         System.out.println(arr);
@@ -26,7 +28,9 @@ public class Arraylist {
         System.out.println(arr);
 
         arr.add(1);
+
         arr.add(2);
+
         arr.add(3);
 
         System.out.println(arr.get(2));
@@ -38,7 +42,9 @@ public class Arraylist {
         System.out.println(arr);
 
         arr.add(2);
+
         arr.add(5);
+
         arr.add(6);
 
         System.out.println(arr);
