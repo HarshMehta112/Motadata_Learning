@@ -47,6 +47,7 @@ public class HashSetImplement
 
         dayset.removeIf(s->s.equals("Monday2"));
 
+
         System.out.println(dayset);
 
     }

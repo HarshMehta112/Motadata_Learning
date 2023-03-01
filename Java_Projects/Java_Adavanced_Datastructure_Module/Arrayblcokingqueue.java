@@ -1,7 +1,8 @@
-
 import java.util.*;
+
 import java.util.concurrent.*;
-public class Arrayblcokingqueue {
+public class Arrayblcokingqueue
+{
 
     public static void main(String[] args) throws InterruptedException {
 
