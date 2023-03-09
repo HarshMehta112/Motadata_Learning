@@ -6,9 +6,12 @@ public class ThreadSleep
         {
             System.out.println(Thread.currentThread().getName()+" running");
 
-            try {
+            try
+            {
                 Thread.sleep(1000);
-            } catch (InterruptedException e) {
+            }
+            catch (InterruptedException e)
+            {
                 e.printStackTrace();
             }
 
