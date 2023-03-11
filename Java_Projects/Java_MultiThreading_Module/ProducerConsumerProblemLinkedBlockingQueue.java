@@ -1,14 +1,14 @@
 import java.util.Random;
 
-import java.util.concurrent.ArrayBlockingQueue;
-
 import java.util.concurrent.BlockingQueue;
 
+import java.util.concurrent.LinkedBlockingQueue;
 
-public class ProducerConsumerProblemArrayBlockingQueue extends Thread
+
+public class ProducerConsumerProblemLinkedBlockingQueue extends Thread
 {
 
-    private static BlockingQueue< Integer > queue = new ArrayBlockingQueue<>(8);
+    private static BlockingQueue< Integer > queue = new LinkedBlockingQueue<>();
 
     public static void main (String[] args)
     {
@@ -53,6 +53,7 @@ public class ProducerConsumerProblemArrayBlockingQueue extends Thread
 
         ConsumerThread.start();
 
+
     }
 
     private static void producer ()
@@ -76,6 +77,8 @@ public class ProducerConsumerProblemArrayBlockingQueue extends Thread
             try
             {
                 queue.put(produce);
+
+                System.out.println("Size of queue "+queue.size());
             }
             catch ( InterruptedException e )
             {
@@ -96,7 +99,7 @@ public class ProducerConsumerProblemArrayBlockingQueue extends Thread
 
             try
             {
-                Thread.sleep(10000);
+                Thread.sleep(1000);
 
                 consume = queue.take();
             }
