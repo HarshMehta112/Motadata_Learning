@@ -2,7 +2,7 @@ public class BookTheaterSeat
 {
     static int totalSeats=10;
 
-    static synchronized void bookSeat(int seats)
+    static void bookSeat(int seats)
     {
         if(totalSeats>=seats)
         {
