@@ -25,14 +25,14 @@ class TestThreadPool
 {
     public static void main(String[] args)
     {
-        ScheduledExecutorService exce = Executors.newScheduledThreadPool(5);
+        ScheduledExecutorService exce = Executors.newScheduledThreadPool(1);
 
-        for(int index=1;index<=10;index++)
-        {
+//        for(int index=1;index<=10;index++)
+//        {
             Runnable runnable = new ThreadPoolInJava();
 
-            exce.scheduleAtFixedRate(runnable,1,5, TimeUnit.SECONDS);
-        }
+            exce.scheduleAtFixedRate(runnable,1,2, TimeUnit.SECONDS);
+//        }
        // exce.shutdown();
 
         while(!exce.isTerminated()){}

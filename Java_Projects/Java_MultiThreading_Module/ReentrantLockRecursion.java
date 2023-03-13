@@ -21,11 +21,11 @@ public class ReentrantLockRecursion
         {
             lock.lock();
 
-            System.out.print(lock.getHoldCount()+" ");
+            System.out.println(Thread.currentThread().getName()+" - "+lock.getHoldCount()+" ");
 
             ans = (n) * (factorial(n - 1));
 
-            System.out.print(lock.getHoldCount()+" ");
+//            System.out.print(Thread.currentThread().getName()+" - "+lock.getHoldCount()+" ");
 
 //            if(lock.getHoldCount()==3)
 //            {
@@ -39,7 +39,35 @@ public class ReentrantLockRecursion
 
     public static void main (String[] args)
     {
-        System.out.println(new ReentrantLockRecursion().factorial(5));
+        ReentrantLockRecursion reentrantLock = new ReentrantLockRecursion();
+
+        Thread hread = new Thread(new Runnable()
+        {
+
+            @Override
+            public void run ()
+            {
+
+                System.out.println(reentrantLock.factorial(5));
+
+            }
+        });
+
+        Thread thread = new Thread(new Runnable()
+        {
+
+            @Override
+            public void run ()
+            {
+
+                System.out.println(reentrantLock.factorial(5));
+
+            }
+        });
+
+        hread.start();
+
+        thread.start();
     }
 
 }
