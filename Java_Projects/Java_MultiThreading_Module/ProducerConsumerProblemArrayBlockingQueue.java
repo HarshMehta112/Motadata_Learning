@@ -48,10 +48,11 @@ public class ProducerConsumerProblemArrayBlockingQueue extends Thread
                 }
             }
         });
+            
+        ConsumerThread.start();
 
         ProducerThread.start();
 
-        ConsumerThread.start();
 
     }
 

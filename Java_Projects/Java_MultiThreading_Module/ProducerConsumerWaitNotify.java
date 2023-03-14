@@ -120,6 +120,7 @@ class InterThread
 {
     public static void main(String[] args)
     {
+
         ProducerConsumerWaitNotify obj = new ProducerConsumerWaitNotify();
 
         new Producer(obj);
