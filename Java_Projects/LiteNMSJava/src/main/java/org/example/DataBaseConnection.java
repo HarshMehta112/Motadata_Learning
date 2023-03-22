@@ -22,9 +22,31 @@ public class DataBaseConnection
         }
         catch (ClassNotFoundException e)
         {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
+
+    public static void TOP5MaxRTT()
+    {
+
+        Statement statement = null;
+
+        try
+        {
+
+            String query = "select count(IP_ADRESS) from MONITOR_TABLE";
+
+            int n = statement.executeUpdate(query);
+
+            System.out.println(n);
+
+        }
+        catch ( Exception exception )
+        {
+            exception.printStackTrace();
+        }
+    }
+
 
     public void DBDataFetch()
     {
