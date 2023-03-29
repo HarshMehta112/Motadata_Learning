@@ -96,6 +96,15 @@ public class MultiThreadedClient
 
                 if(msgout==null )
                 {
+                    try
+                    {
+                        socket.close();
+                    }
+                    catch ( IOException e )
+                    {
+                        e.printStackTrace();
+                    }
+
                     System.exit(0);
                 }
 
@@ -106,6 +115,8 @@ public class MultiThreadedClient
                     try
                     {
                         socket.close();
+
+                        System.exit(0);
                     }
                     catch ( IOException e )
                     {
