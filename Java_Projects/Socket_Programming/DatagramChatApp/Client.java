@@ -34,7 +34,6 @@ public class Client
 
                         DatagramPacket datagramPacket = new DatagramPacket(bytes, bytes.length, ip, 1616);
 
-                        // send the new packet
                         datagramSocket.send(datagramPacket);
 
                         String msg = new String(bytes);
