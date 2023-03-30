@@ -13,11 +13,11 @@ public class DatagramClient
 
         InetAddress IP = InetAddress.getByName("localhost");
 
-        DatagramSocket clientSocket = new DatagramSocket();
+        DatagramSocket clientSocket = new DatagramSocket(1616);
 
         while(true)
         {
-            byte[] sendBuffer = new byte[1024];
+            byte[] sendBuffer;
 
             byte[] receiveBuffer = new byte[1024];
 
@@ -27,7 +27,7 @@ public class DatagramClient
 
             sendBuffer = clientData.getBytes();
 
-            DatagramPacket sendPacket = new DatagramPacket(sendBuffer,sendBuffer.length,IP,1616);
+            DatagramPacket sendPacket = new DatagramPacket(sendBuffer,sendBuffer.length,IP,999);
 
             clientSocket.send(sendPacket);
 

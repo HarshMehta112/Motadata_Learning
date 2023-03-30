@@ -11,7 +11,7 @@ public class Client
     public static void main (String args[]) throws IOException
     {
 
-        DatagramSocket datagramSocket = new DatagramSocket(9999);
+        DatagramSocket datagramSocket = new DatagramSocket(9998);
 
         InetAddress ip = InetAddress.getByName("localhost");
 
@@ -32,7 +32,7 @@ public class Client
 
                         bytes = reader.readLine().getBytes();
 
-                        DatagramPacket datagramPacket = new DatagramPacket(bytes, bytes.length, ip, 1616);
+                        DatagramPacket datagramPacket = new DatagramPacket(bytes, bytes.length, ip, 1617);
 
                         datagramSocket.send(datagramPacket);
 
@@ -74,10 +74,12 @@ public class Client
 
                         System.out.println("Server :-"+msg);
 
-                        if ( msg.equals("bye") )
+                        if ( (msg).equals("bye") )
                         {
                             break;
+
                         }
+
                     }
                 }
                 catch ( Exception e )

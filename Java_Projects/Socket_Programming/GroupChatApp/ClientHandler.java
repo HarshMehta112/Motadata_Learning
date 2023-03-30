@@ -66,15 +66,14 @@ public class ClientHandler implements Runnable
     @Override
     public void run ()
     {
-        String messageFromClient ;
 
         while ( socket.isConnected() )
         {
             try
             {
-                messageFromClient = bufferedReader.readLine();
+                String messgae = bufferedReader.readLine();
 
-                broadCastMessage(messageFromClient);
+                broadCastMessage(messgae);
             }
             catch ( Exception exception )
             {
@@ -112,13 +111,6 @@ public class ClientHandler implements Runnable
             }
 
         }
-    }
-
-    public void removeClientHandler()
-    {
-        clientHandlers.remove(this);
-
-        broadCastMessage("Server "+clientName+" has left the chat");
     }
 
 }

@@ -8,17 +8,16 @@ import java.util.*;
 public class Server
 {
 
-    public static void main (String args[]) throws IOException
+    public static void main (String args[]) throws IOException, InterruptedException
     {
 
-        DatagramSocket datagramSocket = new DatagramSocket(1616);
+        DatagramSocket datagramSocket = new DatagramSocket(1617);
 
         InetAddress ip = InetAddress.getByName("localhost");
 
 
         Thread sendMessage = new Thread(new Runnable()
         {
-
             @Override
             public void run ()
             {
@@ -34,11 +33,12 @@ public class Server
 
                         bytes = reader.readLine().getBytes();
 
-                        DatagramPacket sp = new DatagramPacket(bytes, bytes.length, ip, 9999);
+                        DatagramPacket sp = new DatagramPacket(bytes, bytes.length, ip, 9998);
 
                         datagramSocket.send(sp);
 
                         String msg = new String(bytes);
+
 
                         if ( (msg).equals("bye") )
                         {
