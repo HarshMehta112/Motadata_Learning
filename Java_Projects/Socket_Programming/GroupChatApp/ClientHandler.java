@@ -92,11 +92,15 @@ public class ClientHandler implements Runnable
         {
             try
             {
+//                System.out.println("Hi");
+
                 if(!clientHandler.clientName.equals(clientName))
                 {
                     clientHandler.bufferedWriter.write(message);
 
-                    clientHandler.bufferedWriter.newLine();
+//                    System.out.println("hi");
+
+                    clientHandler.bufferedWriter.newLine();   /// Imppppppppppppp
 
                     clientHandler.bufferedWriter.flush();
                 }
