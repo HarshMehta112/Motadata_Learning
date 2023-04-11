@@ -22,6 +22,8 @@ public class PublicerServer
             {
                 String message = "Hi harsh " + random.nextInt(1000);
 
+                socket.sendMore("Main");
+
                 socket.send(message);
 
                 socket.send("Harsh");

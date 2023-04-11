@@ -13,11 +13,19 @@ public class Receiver
         {
             socket.connect("tcp://localhost:5555");
 
-            System.out.println("Sender: "+new String(socket.recv()));
+            socket.setSndHWM(2);
 
-            System.out.println("Sending message...!");
+            while ( true )
+            {
+                System.out.println("Sender: "+new String(socket.recv()));
 
-            socket.send("Message received...");
+                System.out.println("Sending message...!");
+
+                socket.send("Message received...");
+
+                Thread.sleep(1000);
+            }
+
         }
         catch (Exception exception)
         {

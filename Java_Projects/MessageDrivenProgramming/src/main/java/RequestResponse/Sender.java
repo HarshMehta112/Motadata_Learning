@@ -12,11 +12,18 @@ public class Sender
         {
             socket.bind("tcp://localhost:5555");
 
-            socket.send("This is Harsh");
+            while ( true )
+            {
+                socket.send("This is Harsh");
 
-            System.out.println("Message sent...!");
+                System.out.println("Message sent...!");
 
-            System.out.println("Receiver: "+new String(socket.recv()));
+                System.out.println("Receiver: "+new String(socket.recv()));
+
+                Thread.sleep(1000);
+            }
+
+
         }
         catch (Exception exception)
         {

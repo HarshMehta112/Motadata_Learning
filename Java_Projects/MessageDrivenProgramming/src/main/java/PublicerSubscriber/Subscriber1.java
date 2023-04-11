@@ -14,11 +14,11 @@ public class Subscriber1
         {
             socket.connect("tcp://localhost:9999");
 
-            String filter = (args.length > 0) ? args[0] : "Harsh";
+//            String filter = (args.length > 0) ? args[0] : "Harsh";
 
-//            socket.subscribe("");
+            socket.subscribe("");
 
-            socket.subscribe(filter.getBytes(ZMQ.CHARSET));
+//            socket.subscribe(filter.getBytes(ZMQ.CHARSET));
 
             while ( true )
             {
