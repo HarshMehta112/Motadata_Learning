@@ -19,13 +19,13 @@ public class Producer
 
 //            Random random = new Random();
 
-            int cnt=0;
+            int cnt=300000;
 
-            while ( true )
+            while ( cnt>0)
             {
                 String message = "This is Harsh Mehta " + cnt;
 
-                cnt++;
+                cnt--;
 
                 producer.produce("TestByHarsh",(message.getBytes()));
 

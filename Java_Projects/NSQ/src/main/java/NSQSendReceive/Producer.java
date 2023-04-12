@@ -1,5 +1,7 @@
 package NSQSendReceive;
 
+import com.github.brainlag.nsq.NSQCommand;
+import com.github.brainlag.nsq.NSQConsumer;
 import com.github.brainlag.nsq.NSQProducer;
 
 import java.util.Random;
@@ -29,7 +31,7 @@ public class Producer
 
                 cnt++;
 
-                producer.produce("TestByHarsh",(message.getBytes()));
+                producer.produce("TestFOrr",(message.getBytes()));
 
                 System.out.println(message);
             }
