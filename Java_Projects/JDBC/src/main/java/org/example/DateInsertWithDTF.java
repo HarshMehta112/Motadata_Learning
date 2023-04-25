@@ -1,33 +1,34 @@
 package org.example;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.text.SimpleDateFormat;
+import java.util.Properties;
 
 
 public class DateInsertWithDTF
 {
 
-
-    static final String DB_URL = "jdbc:h2:~/TESTJDBC";
-
-
-    static final String USER = "sa";
-
-    static final String PASS = "";
-
     static Connection connection = null;
 
 
-    public static void main (String[] args)
+    public static void main (String[] args) throws Exception
     {
+        PropertiesFile.SetDBParameters();
 
         try
         {
-            connection = DriverManager.getConnection(DB_URL, USER, PASS);
+            Properties properties = new Properties();
+
+            FileInputStream fileInputStream = new FileInputStream("/home/harsh/Project/db.properties");
+
+            properties.load(fileInputStream);
+
+            connection = DriverManager.getConnection(PropertiesFile.URL,properties);
 
             String query = "INSERT INTO DATES VALUES(?,?)";
 
@@ -35,7 +36,7 @@ public class DateInsertWithDTF
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
-            int id = 10;
+            int id = 100;
 
             while ( true )
             {
