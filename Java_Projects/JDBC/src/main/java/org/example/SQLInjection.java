@@ -8,7 +8,7 @@ import java.sql.*;
 public class SQLInjection
 {
 
-    static final String DB_URL = "jdbc:h2:~/TESTJDBC";
+    static final String DB_URL = "jdbc:h2:tcp://localhost/~/TESTJDBC";
 
 
     static final String USER = "sa";

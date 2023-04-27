@@ -14,7 +14,7 @@ public class PropertiesFile
 
 
 
-    static void SetDBParameters() throws Exception
+    public static void SetDBParameters() throws Exception
     {
         Properties properties = new Properties();
 

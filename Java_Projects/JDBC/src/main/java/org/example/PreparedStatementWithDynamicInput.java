@@ -10,7 +10,7 @@ import java.sql.PreparedStatement;
 public class PreparedStatementWithDynamicInput
 {
 
-    static final String DB_URL = "jdbc:h2:~/TESTJDBC";
+    static final String DB_URL = "jdbc:h2:tcp://localhost/~/TESTJDBC";
 
 
     static final String USER = "sa";

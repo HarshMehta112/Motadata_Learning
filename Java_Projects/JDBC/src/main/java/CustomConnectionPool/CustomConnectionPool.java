@@ -10,19 +10,51 @@ import java.util.concurrent.ArrayBlockingQueue;
 public class CustomConnectionPool
 {
 
-    private String URL = "jdbc:h2:tcp://localhost/~/TESTJDBC";
+    private static String URL ;
 
-    private String user = "sa";
+    private static String USER;
 
-    private String password = "";
+    private static String PASSWORD ;
 
-    private ArrayBlockingQueue< Connection > connectionPool;
+    private static ArrayBlockingQueue< Connection > connectionPool;
 
-    private ArrayList< Connection > activeConnection = new ArrayList<>();
+    private static ArrayList< Connection > activeConnection = new ArrayList<>();
 
     private final int INITIALPOLLSIZE = 5;
 
     private final int MAXPOOLSIZE = 10;
+
+    private static int poolSize = 0;
+
+    private static CustomConnectionPool customConnectionPool;
+
+    private CustomConnectionPool()
+    {
+        poolSize=INITIALPOLLSIZE;
+    }
+
+    private CustomConnectionPool(int size)
+    {
+        poolSize = size;
+    }
+
+    public static CustomConnectionPool getInstance()
+    {
+        if(customConnectionPool==null)
+        {
+            customConnectionPool = new CustomConnectionPool();
+        }
+        return customConnectionPool;
+    }
+
+    public static CustomConnectionPool getInstance(int size)
+    {
+        if(customConnectionPool==null)
+        {
+            customConnectionPool = new CustomConnectionPool(size);
+        }
+        return customConnectionPool;
+    }
 
 
     public void setURL (String URL)
@@ -34,13 +66,13 @@ public class CustomConnectionPool
     public void setUser (String USER)
     {
 
-        this.user = user;
+        this.USER = USER;
     }
 
     public void setPassword (String password)
     {
 
-        this.password = password;
+        this.PASSWORD = PASSWORD;
     }
 
 
@@ -53,13 +85,13 @@ public class CustomConnectionPool
     public String getUser ()
     {
 
-        return user;
+        return USER;
     }
 
     public String getPassword ()
     {
 
-        return password;
+        return PASSWORD;
     }
 
     public int getActiveConnections ()
@@ -77,41 +109,21 @@ public class CustomConnectionPool
     public void createConnectionPool ()
     {
 
-        connectionPool = new ArrayBlockingQueue<>(INITIALPOLLSIZE);
-
-        for ( int index = 0; index < INITIALPOLLSIZE; index++ )
+        if ( poolSize < MAXPOOLSIZE )
         {
-            try
-            {
-                Connection connection = DriverManager.getConnection(URL, user, password);
+            connectionPool = new ArrayBlockingQueue<>(poolSize);
 
-                connectionPool.add(connection);
-            }
-            catch ( SQLException e )
-            {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void createConnectionPool (int size)
-    {
-
-        if ( size < MAXPOOLSIZE )
-        {
-            connectionPool = new ArrayBlockingQueue<>(size);
-
-            for ( int index = 0; index < size; index++ )
+            for ( int index = 0; index < poolSize; index++ )
             {
                 try
                 {
-                    Connection connection = DriverManager.getConnection(URL, user, password);
+                    Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
 
                     connectionPool.add(connection);
                 }
-                catch ( SQLException e )
+                catch ( SQLException exception )
                 {
-                    e.printStackTrace();
+                    exception.printStackTrace();
                 }
             }
         }
@@ -141,11 +153,29 @@ public class CustomConnectionPool
             activeConnection.remove(connection);
 
         }
-        catch ( InterruptedException e )
+        catch ( InterruptedException exception )
         {
-            e.printStackTrace();
+            exception.printStackTrace();
         }
 
     }
+
+    public void closeAllConnections()
+    {
+        int size = activeConnection.size();
+
+        for(int index=0;index<size;index++)
+        {
+            try
+            {
+                activeConnection.get(index).close();
+            }
+            catch ( Exception exception )
+            {
+                exception.printStackTrace();
+            }
+        }
+    }
+
 
 }

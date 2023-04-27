@@ -1,4 +1,4 @@
-package CRUD3;
+package CRUD4;
 
 import java.sql.*;
 import java.util.*;
@@ -16,11 +16,15 @@ public class Operations
         this.connection = connection;
     }
 
-    // Insert operation
+
+    //insert operation
+
     public int insert (String tableName, Map< String, Object > data) throws SQLException
     {
 
-        String columns = String.join(",", data.keySet());
+        ArrayList< String > columnNames = new ArrayList<>(data.keySet());
+
+        String columns = String.join(",", columnNames);
 
         String values = String.join(",", Collections.nCopies(data.size(), "?"));
 
@@ -30,28 +34,46 @@ public class Operations
         {
             int index = 1;
 
-            for ( Object value : data.values() )
+            for ( Object value : columnNames )
             {
-                statement.setObject(index++, value);
+                statement.setObject(index++, data.get(value));
             }
+
             return statement.executeUpdate();
+
         }
     }
+
 
     // Update operation
     public int update (String tableName, Map< String, Object > data, String whereClause) throws SQLException
     {
 
-        String[] columnArray = new String[data.size()];
+        ArrayList< String > columnNames = new ArrayList<>(data.keySet());
 
-        int index = 0;
+        String setClause = "";
 
-        for ( String column : data.keySet() )
+        for ( int index = 0; index < columnNames.size(); index++ )
         {
-            columnArray[index++] = column + " = ?";
+            setClause += columnNames.get(index)+"= ?";
+
+            if ( index != columnNames.size() - 1 )
+            {
+                setClause += ",";
+            }
         }
 
-        String setClause = String.join(",", columnArray);
+//        ListIterator< String > listIterator = columnNames.listIterator();
+//
+//        while ( listIterator.hasNext() )
+//        {
+//            setClause += listIterator.next() + "= ?";
+//
+//            if ( listIterator.hasNext() )
+//            {
+//                setClause += ",";
+//            }
+//        }
 
         String query = "UPDATE " + tableName + " SET " + setClause + " WHERE " + whereClause;
 
@@ -59,9 +81,9 @@ public class Operations
         {
             int indexs = 1;
 
-            for ( Object value : data.values() )
+            for ( String column : columnNames )
             {
-                statement.setObject(indexs++, value);
+                statement.setObject(indexs++, data.get(column));
             }
 
             return statement.executeUpdate();
@@ -82,11 +104,13 @@ public class Operations
     }
 
     // Select operation
-    public List< Map< String, Object > > select (String tableName,ArrayList<String> columnNames, String whereClause) throws SQLException
+    public List< Map< String, Object > > select (String tableName, ArrayList< String > columnNames,
+                                                 String whereClause) throws SQLException
     {
+
         String columns = String.join(",", columnNames);
 
-        String query = "SELECT "+ columns +" FROM " + tableName + " WHERE " + whereClause;
+        String query = "SELECT " + columns + " FROM " + tableName + " WHERE " + whereClause;
 
         try ( PreparedStatement statement = connection.prepareStatement(query) )
         {

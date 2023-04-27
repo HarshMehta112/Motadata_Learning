@@ -1,4 +1,4 @@
-package CRUD3;
+package CRUD4;
 
 import java.sql.*;
 import java.util.*;
@@ -21,13 +21,15 @@ public class Main
     {
         connection = DriverManager.getConnection(DB_URL,USER,PASS);
 
-//        HashMap<String,Object> map = new HashMap<>();
+        HashMap<String,Object> map = new HashMap<>();
 
-//        map.put("PERSONID",97);
+        map.put("EMPNO",97);
 
-//        map.put("FIRSTNAME","Sankalp");
+        map.put("EMPNAME","VIRAMSIR");
 
         Operations operations = new Operations(connection);
+
+        operations.insert("EMPLOYEE",map);
 
         ArrayList<String> colums = new ArrayList<>();
 
@@ -35,11 +37,9 @@ public class Main
 
         colums.add("IP");
 
-//        operations.update("PERSONS",map,"FIRSTNAME='Sankalp'");
+        operations.update("EMPLOYEE",map,"EMPNAME='Sankalp'");
 
-//        operations.delete("ORDERS","ORDERID=10308");
-
-        Object[] whereValues = {100};
+        operations.delete("ORDERS","ORDERID=10308");
 
         System.out.println(operations.select("PRACTICE",colums,"RTT>0"));
     }

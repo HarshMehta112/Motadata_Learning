@@ -8,6 +8,7 @@ import java.sql.Statement;
 
 public class BatchUpdatesWithStatement
 {
+
     static final String DB_URL = "jdbc:h2:tcp://localhost/~/TESTJDBC";
 
 
@@ -18,20 +19,16 @@ public class BatchUpdatesWithStatement
     static Connection connection = null;
 
 
-
-
-
     public static void main (String[] args) throws SQLException
     {
+
         connection = DriverManager.getConnection(DB_URL, USER, PASS);
 
         Statement statement = connection.createStatement();
 
         try
         {
-
-
-//            connection.setAutoCommit(false);
+            connection.setAutoCommit(false);
 
             statement.addBatch("INSERT INTO EMPLOYEE VALUES(9,'DHAVAL')");
 
@@ -41,13 +38,7 @@ public class BatchUpdatesWithStatement
 
             statement.addBatch("DELETE FROM EMPLOYEE WHERE EMPNO=455");
 
-
-            for(int i=0;i<1000;i++)
-            {
-                int id = i;
-                statement.addBatch("INSERT INTO EMPLOYEE VALUES('"+id+"','RAHIL')");
-            }
-
+            statement.addBatch("INSERT INTO EMPLOYEE VALUES(19,'RAHIL')");
 
             statement.executeBatch();
 
@@ -55,20 +46,17 @@ public class BatchUpdatesWithStatement
         }
         catch ( Exception exception )
         {
-//            try
-//            {
-//                connection.rollback();
-//            }
-//            catch ( SQLException e )
-//            {
-//                throw new RuntimeException(e);
-//            }
+            try
+            {
+                connection.rollback();
+            }
+            catch ( SQLException e )
+            {
+                throw new RuntimeException(e);
+            }
 
             exception.printStackTrace();
         }
-        finally
-        {
-
-        }
     }
+
 }

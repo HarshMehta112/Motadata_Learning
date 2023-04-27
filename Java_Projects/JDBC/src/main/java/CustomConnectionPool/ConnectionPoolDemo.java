@@ -10,9 +10,15 @@ public class ConnectionPoolDemo
 
     public static void main (String[] args) throws InterruptedException
     {
-        CustomConnectionPool connectionPool = new CustomConnectionPool();
+        CustomConnectionPool connectionPool = CustomConnectionPool.getInstance(4);
 
-        connectionPool.createConnectionPool(4);
+        connectionPool.setURL("jdbc:h2:tcp://localhost/~/TESTJDBC");
+
+        connectionPool.setUser("sa");
+
+        connectionPool.setPassword("");
+
+        connectionPool.createConnectionPool();
 
         new Thread(new Runnable()
         {
@@ -20,9 +26,9 @@ public class ConnectionPoolDemo
             @Override
             public void run ()
             {
+                Connection connection1 = connectionPool.getConnection();
                 try
                 {
-                    Connection connection1 = connectionPool.getConnection();
 
                     PreparedStatement preparedStatement = connection1.prepareStatement("SELECT * FROM PRACTICE");
 
@@ -41,17 +47,21 @@ public class ConnectionPoolDemo
                         System.out.println(" ---------------------------------------------");
 
                     }
-                    connectionPool.releaseConnection(connection1);
+
                 }
                 catch ( Exception exception )
                 {
                     exception.printStackTrace();
                 }
+                finally
+                {
+                    connectionPool.releaseConnection(connection1);
+                }
 
             }
         }).start();
 
-        Thread.sleep(10000);
+        Thread.sleep(5000);
 
         new Thread(new Runnable()
         {
@@ -59,9 +69,10 @@ public class ConnectionPoolDemo
             @Override
             public void run ()
             {
+                Connection connection2 = connectionPool.getConnection();
+
                 try
                 {
-                    Connection connection2 = connectionPool.getConnection();
 
                     PreparedStatement preparedStatement = connection2.prepareStatement("SELECT * FROM EMPLOYEE");
 
@@ -77,7 +88,6 @@ public class ConnectionPoolDemo
 
                         System.out.println("---------------------------------------------");
                     }
-                    connectionPool.releaseConnection(connection2);
 
                     System.out.println(Thread.currentThread().getName()+" Active Connections "+connectionPool.getActiveConnections());
 
@@ -86,10 +96,12 @@ public class ConnectionPoolDemo
                 {
                     exception.printStackTrace();
                 }
-
+                finally
+                {
+                    connectionPool.releaseConnection(connection2);
+                }
             }
         }).start();
-
 
 
     }

@@ -39,9 +39,9 @@ public class DynamicInput
 
             String name = reader.readLine();
 
-//            String query = "INSERT INTO EMPLOYEE VALUES("+Id+",'"+name+"')";
+            String query = "INSERT INTO EMPLOYEE VALUES("+Id+",'"+name+"')";
 
-            String query = String.format("insert into employee values(%d,'%s')", Id,name);
+//            String query = String.format("insert into employee values(%d,'%s')", Id,name);
 
             statement.executeUpdate(query);
 
