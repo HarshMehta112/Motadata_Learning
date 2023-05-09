@@ -1,0 +1,88 @@
+body{
+    background-color: lightskyblue;
+    color: coral;
+    font-family: C059;
+    font-size: large;
+    line-height: 1.6em;
+    margin: auto;
+}
+h1
+{
+    color:darkgoldenrod;
+}
+
+p
+{
+    margin: 5px 10px;
+    color: chartreuse;
+}
+
+.container
+{
+    margin: auto;
+    width: 80%;
+}
+
+a{
+    text-decoration: none;
+    color: #000;
+}
+a:hover
+{
+    color: darkgoldenrod;
+}
+
+a:active
+{
+    color: darkblue;
+}
+a:visited
+{
+    color: fuchsia;
+}
+
+
+.box-1
+{
+    background-color: #333333;
+    color: aliceblue;
+    border: aqua 5px solid;
+    padding: 20px;
+
+}
+.box-1 h1
+{
+    font-family: Tahoma;
+    font-weight: 800;
+    font-style: italic;
+    text-decoration: underline;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    word-spacing: 1em;
+}
+
+.box-2
+{
+    border: 3px dotted;
+    padding:20px;
+    margin: 20px 0;
+}
+.categories
+{
+    border: 1px #ccc solid;
+    padding:10px;
+    border-radius: 15px;
+    color: chartreuse;
+}
+
+.categories h2
+{
+    text-align: center;
+}
+
+.categories ul
+{
+    background-color: #333333;
+    color: chartreuse;
+    list-style: square;
+}

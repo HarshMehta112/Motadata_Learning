@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+        "http://struts.apache.org/dtds/struts-2.5.dtd">
+
+<struts>
+
+    <constant name="struts.devMode" value="true" />
+    <constant name="struts.action.excludePattern" value="/chat"/>
+
+
+    <package name="default" extends="struts-default">
+        <result-types>
+            <result-type name="json" class="org.apache.struts2.json.JSONResult">
+                <param name="noCache">true</param>
+                <param name="excludeNullProperties">true</param>
+                <param name="enableGZIP">true</param>
+            </result-type>
+        </result-types>
+        <action name="">
+            <result>/index.jsp</result>
+        </action>
+
+        <action name="submit" class="Action" method="insert">
+            <result name="success" type="json"></result>
+        </action>
+
+        <action name="select" class="Action" method="select">
+
+            <result name="success" type="json">
+                <param name="root">result</param>
+            </result>
+        </action>
+    </package>
+
+</struts>

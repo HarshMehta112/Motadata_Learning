@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DOM get element from tag name</title>
+</head>
+<body>
+
+<p>hello all </p>
+<p>Good Moning.....</p>
+<p>I am Harsh Mehta</p>
+
+<p id="demo"></p>
+
+<script>
+  const element = document.getElementsByTagName("p");
+
+  document.getElementById("demo").innerHTML = "this is the output from get element by tag name  "+element[1].innerHTML;
+
+</script>
+
+</body>
+</html>

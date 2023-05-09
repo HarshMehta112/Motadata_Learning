@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EventsDemo</title>
+</head>
+<body>
+<button onclick="showSecret('this is harsh')">show</button>
+<br/><br/>
+<div id="message">
+Hello all
+</div>
+<script>
+  var message1 = document.getElementById("message");
+  function showSecret(message){
+    message1.innerHTML=message;
+  }
+</script>
+</body>
+</html>

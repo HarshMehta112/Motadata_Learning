@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Event Listener Example</title>
+</head>
+<body>
+
+<h2>Add Event Listener Example</h2>
+
+<button id="button">Click Me</button>
+
+<p id="demo"></p>
+
+<script>
+  document.getElementById("button").addEventListener("click",myFunction);
+
+  function myFunction()
+  {
+    document.getElementById("demo").innerHTML = "Hi Harsh!"
+  }
+
+
+</script>
+
+
+</body>
+</html>

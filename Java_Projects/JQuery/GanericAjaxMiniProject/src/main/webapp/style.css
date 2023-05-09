@@ -1,0 +1,42 @@
+#wrap_project.container{
+    width: 50%;
+    margin: 0 auto;
+    padding: 15px 0 0 0;  }
+
+#wrap_project button{
+    margin: 0 0 15px 0;  }
+
+table tbody tr#null_tr td{
+    color: red;
+    font-weight: 500;
+    font-size: 13px; }
+
+table tbody tr td span.daction{
+    float: left;
+    color: red;
+    font-size: 17px !important;
+    font-weight: 1000 !important;
+    cursor: pointer;
+    margin-left: 15px; }
+
+table tbody tr td span.eaction{
+    float: left;
+    color: green;
+    font-size: 17px !important;
+    font-weight: 1000 !important;
+    cursor: pointer;
+}
+
+#table table thead tr th:first-child{ width: 80%; }
+
+#table span{
+    display: block;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 500; }
+
+#myModal .modal-footer span.modal-footer-error{
+    margin-right: 11rem;
+    color: red;
+    font-weight: 600;
+    font-size: 13px; }
