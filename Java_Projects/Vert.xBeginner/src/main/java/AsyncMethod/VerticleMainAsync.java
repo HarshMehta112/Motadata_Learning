@@ -14,7 +14,7 @@ public class VerticleMainAsync extends AbstractVerticle
 
         Vertx vertx = Vertx.vertx();
 
-        vertx.deployVerticle(new VerticleMainAsync()).onComplete(stringAsyncResult ->
+        vertx.deployVerticle(VerticleMainAsync.class.getName(), new DeploymentOptions().setInstances(1)).onComplete(stringAsyncResult ->
         {
 
             if(stringAsyncResult.succeeded())

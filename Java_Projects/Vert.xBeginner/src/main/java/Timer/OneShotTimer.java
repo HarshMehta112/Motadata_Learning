@@ -18,27 +18,28 @@ public class OneShotTimer extends AbstractVerticle
         vertx.deployVerticle(OneShotTimer.class.getName());
     }
 
-    public void start()
+    public void start ()
     {
-        vertx.setTimer(4000,res->{
+
+        vertx.setTimer(4000, res ->
+        {
             System.out.println("thread in the timer : " + Thread.currentThread().getName());
 
             System.out.println("Execution running");
         });
-        int i=5000000;
-       while(i>0)
-       {
-
-//           System.out.println("thread in the while loop : " + Thread.currentThread().getName());
-
-
-
-//           System.out.println(i+" Start method completed");
-       }
+//        int i = 5000000;
+//        while ( i > 0 )
+//        {
+//
+//            System.out.println("thread in the while loop : " + Thread.currentThread().getName());
+//
+//            System.out.println(i + " Start method completed");
+//        }
     }
 
-    public void stop()
+    public void stop ()
     {
+
         vertx.undeploy(OneShotTimer.class.getName());
 
         System.out.println("Undeploying the verticle");
