@@ -11,7 +11,7 @@ public class MainPubSub
 
         Vertx vertx = Vertx.vertx();
 
-        Thread.sleep(5000);
+//        Thread.sleep(5000);
 
 
         vertx.deployVerticle(PublishSubscribePublicer.class.getName()).onComplete(event->{

@@ -15,7 +15,7 @@ public class PublishSubscribePublicer extends AbstractVerticle
 
         EventBus eventBus = vertx.eventBus();
 
-        vertx.setPeriodic(2000,id->{
+        vertx.setPeriodic(1000,id->{
             eventBus.request("Harsh.Test.PublishSubscribe","Hello all !", new DeliveryOptions().setSendTimeout(1000));
         });
     }

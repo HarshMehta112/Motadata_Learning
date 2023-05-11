@@ -53,7 +53,7 @@ public class FutureComposition extends AbstractVerticle
 
     public void start(Promise<Void> startPromise)
     {
-        /*exxecuteAfterTwoSeconds().compose(result->executeAfterFourSecond().compose(res->executeAfterSixSecond())).onComplete(event->
+        exxecuteAfterTwoSeconds().compose(result->executeAfterFourSecond().compose(res->executeAfterSixSecond())).onComplete(event->
         {
             if(event.succeeded())
             {
@@ -68,24 +68,24 @@ public class FutureComposition extends AbstractVerticle
 
                 startPromise.fail("Some error occured"+event.cause().getMessage());
             }
-        });*/
-
-        CompositeFuture.all(exxecuteAfterTwoSeconds(),executeAfterFourSecond(),executeAfterSixSecond()).onComplete(event->
-        {
-            if(event.succeeded())
-            {
-                System.out.println("All tasks are excuted successfully");
-
-                startPromise.complete();
-            }
-            else
-            {
-                System.out.println("Some task are failed "+event.cause().getMessage());
-
-                startPromise.fail("Some task are failed "+event.cause().getMessage());
-            }
-
         });
+
+//        CompositeFuture.join(exxecuteAfterTwoSeconds(),executeAfterFourSecond(),executeAfterSixSecond()).onComplete(event->
+//        {
+//            if(event.succeeded())
+//            {
+//                System.out.println("All tasks are executed successfully");
+//
+//                startPromise.complete();
+//            }
+//            else
+//            {
+//                System.out.println("Some task are failed "+event.cause().getMessage());
+//
+//                startPromise.fail("Some task are failed "+event.cause().getMessage());
+//            }
+//
+//        });
 
     }
 
