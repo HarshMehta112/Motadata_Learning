@@ -4,6 +4,7 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.buffer.Buffer;
 
 import io.vertx.core.file.FileSystem;
+import io.vertx.core.file.OpenOptions;
 
 
 public class ExistsAndDelete extends AbstractVerticle
@@ -13,11 +14,24 @@ public class ExistsAndDelete extends AbstractVerticle
 
         FileSystem fileSystem = vertx.fileSystem();
 
-        vertx.fileSystem().writeFile("/home/harsh/JavaWork/Vert.xBeginner/Harsh.txt",
-                Buffer.buffer("Hello Harsh! How are you?")).onComplete(voidAsyncResult -> {
+        Buffer buffer = Buffer.buffer();
+
+        buffer.appendString("Hkejlldv nfdkslvdjf");
+
+        vertx.fileSystem().open("/home/harsh/JavaWork/Vert.xBeginner/Harsh.txt",new OpenOptions().setWrite(true)).onComplete(voidAsyncResult -> {
 
                     if(voidAsyncResult.succeeded())
                     {
+                        vertx.fileSystem().writeFile("/home/harsh/JavaWork/Vert.xBeginner/Harsh.txt",buffer).onComplete(voidAsyncResult1 -> {
+                           if(voidAsyncResult.succeeded())
+                           {
+                               System.out.println("append successs");
+                           }
+                           else
+                           {
+                               System.out.println(voidAsyncResult.cause().getMessage());
+                           }
+                        });
                         System.out.println("write success");
                     }
                     else
