@@ -11,12 +11,11 @@ public class ExistsAndDelete extends AbstractVerticle
 {
     public void start()
     {
-
         FileSystem fileSystem = vertx.fileSystem();
 
         Buffer buffer = Buffer.buffer();
 
-        buffer.appendString("Hkejlldv nfdkslvdjf");
+        buffer.appendString("Harsh Mehta");
 
         vertx.fileSystem().open("/home/harsh/JavaWork/Vert.xBeginner/Harsh.txt",new OpenOptions().setWrite(true)).onComplete(voidAsyncResult -> {
 
@@ -36,7 +35,7 @@ public class ExistsAndDelete extends AbstractVerticle
                     }
                     else
                     {
-                        System.out.println("Worte fail ");
+                        System.out.println("Write fail ");
                     }
 
         });

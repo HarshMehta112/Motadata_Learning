@@ -1,6 +1,7 @@
 package FileSystem.AsyncFile;
 
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Promise;
 import io.vertx.core.file.AsyncFile;
 import io.vertx.core.file.OpenOptions;
 
@@ -10,7 +11,7 @@ import io.vertx.core.buffer.Buffer;
 public class AsyncRead extends AbstractVerticle
 {
 
-    public void start ()
+    public void start (Promise< Void > startPromise) throws Exception
     {
 
         vertx.fileSystem()
@@ -23,7 +24,7 @@ public class AsyncRead extends AbstractVerticle
 
                         Buffer buffer = Buffer.buffer();
 
-                        for ( int i = 0; i < 5; i++ )
+                        for ( int i = 0; i < 1; i++ )
                         {
                             file
                                     .read(buffer, i * 13, i * 13, 13)
