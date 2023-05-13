@@ -27,15 +27,12 @@ public class OneShotTimer extends AbstractVerticle
 
             System.out.println("Execution running");
         });
-        int i = 500;
-        while ( i > 0 )
+
+        while ( true )
         {
-
-            i--;
-
             System.out.println("thread in the while loop : " + Thread.currentThread().getName());
 
-            System.out.println(i + " Start method completed");
+            System.out.println(" Start method completed");
         }
     }
 
