@@ -21,26 +21,26 @@ public class ContextData extends AbstractVerticle
         {
            context.response().setChunked(true);
 
-           context.response().write("putting values in context object");
+            context.response().write("putting values in context object\n");
 
            context.put("Name","Harsh");
-
-           context.response().end();
 
            context.next();
         });
 
-        router.route("/some/path/other").handler(context->
+        router.route("/some/path").handler(context->
         {
-            context.response().setChunked(true);
+//            context.response().setChunked(true);
 
-           context.response().write("I am in context data 2");
+           context.response().write("I am in context data 2\n");
 
 //           String name = context.get("Name");
 
             String data = context.data().toString();
 
-           context.response().write("I am from handler 2 "+ data);
+           context.response().write("I am from handler 2 \n");
+
+           context.response().write("Data from 1st header is "+data );
 
            context.response().end();
         });

@@ -39,6 +39,8 @@ public class ClientAcceptMime extends AbstractVerticle
 
 //            return Future.succeededFuture("Hello from text/plain");
 
+            context.response().putHeader("Content-Type","text/plain");
+
             return Future.succeededFuture(new JsonObject().put("Surname","Mehta"));
 
         });
