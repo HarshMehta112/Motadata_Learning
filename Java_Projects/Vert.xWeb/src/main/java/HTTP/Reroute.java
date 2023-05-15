@@ -31,6 +31,7 @@ public class Reroute extends AbstractVerticle
 
             context.json(new Student(1, "Harsh"));
 
+//            context.response().end();
         });
 
         router.route("/some/path/B").handler(context ->
@@ -55,7 +56,7 @@ public class Reroute extends AbstractVerticle
 
             context.put("Param1", "hello");
 
-            context.reroute("/some/path/A?msg=hellooooooooo");
+            context.reroute("/some/path/A?username=harsh?password=Mind@123");
         });
 
         server.requestHandler(router).listen(8184).onComplete(ready ->
