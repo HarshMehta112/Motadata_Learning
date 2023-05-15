@@ -18,7 +18,7 @@ public class RouteNextExample extends AbstractVerticle
 
         Router router = Router.router(vertx);
 
-        router.get("/get/info").handler(context->
+        router.get("/get/info").disable().handler(context->
         {
            context.response().setChunked(true);
 
