@@ -18,11 +18,11 @@ public class SubRouter2 extends AbstractVerticle
 
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.put("1","ahmedabad");
+        jsonObject.put("1","Harsh");
 
-        jsonObject.put("2","Surat");
+        jsonObject.put("2","Pavan");
 
-        jsonObject.put("3","Surendranagar");
+        jsonObject.put("3","Shekhar");
 
         Router mainRouter = Router.router(vertx);
 
@@ -30,9 +30,9 @@ public class SubRouter2 extends AbstractVerticle
 
         Router listRouter = Router.router(vertx);
 
-        mainRouter.route("/cities/*").subRouter(addRouter);
+        mainRouter.route("/employee/*").subRouter(addRouter);
 
-        mainRouter.route("/cities/*").subRouter(listRouter);
+        mainRouter.route("/employee/*").subRouter(listRouter);
 
         addRouter.post("/:id/:Name").handler(context->
         {
