@@ -28,11 +28,19 @@ public class RequestBody extends AbstractVerticle
          */
         router.get("/student/add").consumes("application/json").handler(BodyHandler.create()).handler(context ->
         {
-            JsonObject studentDetail = context.body().asJsonObject();
+//            JsonObject studentDetail = context.body().asJsonObject();
+//
+//            System.out.println(studentDetail);
+//
+//            System.out.println(studentDetail.getString("name"));
+//
 
-            System.out.println(studentDetail);
+            Student student = context.body().asPojo(Student.class);
 
-            System.out.println(studentDetail.getString("name"));
+            //This will require default constructor as it first creates instance and then uses the getter and setter.
+            System.out.println(student.getId());
+
+            System.out.println(student.getName());
 
             context.response().setChunked(true);
 
