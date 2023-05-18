@@ -8,7 +8,7 @@ import io.vertx.core.impl.logging.LoggerFactory;
 
 public class Sample
 {
-    private static Vertx vertx = Vertx.vertx();
+    private static final Vertx vertx = Vertx.vertx();
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Sample.class);
 
@@ -42,6 +42,15 @@ public class Sample
 
         vertx.<String>executeBlocking(stringPromise ->
         {
+            try
+            {
+                Thread.sleep(5000);
+            }
+            catch ( InterruptedException e )
+            {
+                throw new RuntimeException(e);
+            }
+
             LOGGER.info("Main Promise");
 
             stringPromise.complete("completed!");
@@ -61,6 +70,15 @@ public class Sample
 
         vertx.executeBlocking(promise ->
         {
+            try
+            {
+                Thread.sleep(5000);
+            }
+            catch ( InterruptedException e )
+            {
+                throw new RuntimeException(e);
+            }
+
             LOGGER.info("I am after string executeblocking code");
 
             System.out.println(Thread.currentThread().getName());
@@ -70,6 +88,14 @@ public class Sample
 
         vertx.executeBlocking(promise ->
         {
+            try
+            {
+                Thread.sleep(5000);
+            }
+            catch ( InterruptedException e )
+            {
+                throw new RuntimeException(e);
+            }
             LOGGER.info("I am after executeblocking code 2");
 
             System.out.println(Thread.currentThread().getName());

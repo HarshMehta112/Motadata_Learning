@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://unpkg.io/sockjs-client@1.5.0/dist/sockjs.min.js"></script>
+  <script src='https://unpkg.io/@vertx/eventbus-bridge-client.js@1.0.0-1/vertx-eventbus.js'></script>
+</head>
+<body>
+
+<h1>EVENT BUS BRIDGE PRACTICAL </h1>
+<script>
+  var eb = new EventBus('http://localhost:8080/myapp');
+
+  
+
+  eb.onopen = () => {
+
+    console.log("Connected!");
+
+
+    //inbound: client to server.
+
+    eb.registerHandler('chat.outbound', (error, message) => {
+
+      document.write(message.body);
+
+      document.write("\n");
+
+      console.log('received a message: ' + JSON.stringify(message));
+
+    });
+
+
+    // outbound: server to client
+
+    setInterval(() => eb.send('chat.inbound', {"name":"Harsh "}), 1000);
+
+
+    setInterval(() => eb.send('chat.inbound', {"name":"Mehta "}), 2000);
+  }
+
+</script>
+</body>
+</html>
