@@ -79,7 +79,7 @@ public class Sample
                 throw new RuntimeException(e);
             }
 
-            LOGGER.info("I am after string executeblocking code");
+            LOGGER.info("I am after string execute-blocking code");
 
             System.out.println(Thread.currentThread().getName());
 
@@ -96,7 +96,7 @@ public class Sample
             {
                 throw new RuntimeException(e);
             }
-            LOGGER.info("I am after executeblocking code 2");
+            LOGGER.info("I am after execute-blocking code 2");
 
             System.out.println(Thread.currentThread().getName());
 

@@ -18,21 +18,27 @@ public class OneShotTimer extends AbstractVerticle
         vertx.deployVerticle(OneShotTimer.class.getName());
     }
 
-    public void start ()
+    public void start () throws InterruptedException
     {
 
-        vertx.setTimer(4000, res ->
+       long id = vertx.setTimer(1000, res ->
         {
-            System.out.println("thread in the timer : " + Thread.currentThread().getName());
-
-            System.out.println("Execution running");
+            vertx.fileSystem().createFile("Harsh.txt");
         });
+//
+//       vertx.cancelTimer(id);
 
-        while ( true )
+        for (int i = 0; i < Integer.MAX_VALUE; i++)
         {
-            System.out.println("thread in the while loop : " + Thread.currentThread().getName());
+            for (int j = 0 ; j < Integer.MAX_VALUE; j++)
+            {
+                for(int x=0;x<Integer.MAX_VALUE;x++)
+                {
+                    System.out.println("thread in the while loop : " + Thread.currentThread().getName());
 
-            System.out.println(" Start method completed");
+                    System.out.println(" Start method completed");
+                }
+            }
         }
     }
 

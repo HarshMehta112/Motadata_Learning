@@ -41,7 +41,7 @@ public class Server extends AbstractVerticle
             });
             httpServerRequest.response().end("Hello all ! ----> 200-OK");
 
-        }).listen(8080,"127.0.0.1").onComplete(httpServerAsyncResult ->
+        }).listen(8080,"0.0.0.0").onComplete(httpServerAsyncResult ->
         {
            if(httpServerAsyncResult.succeeded())
            {

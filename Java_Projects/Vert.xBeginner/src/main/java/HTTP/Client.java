@@ -15,7 +15,7 @@ public class Client extends AbstractVerticle
     {
         HttpClient httpClient = vertx.createHttpClient();
 
-        httpClient.request(HttpMethod.GET,8080,"127.0.0.1","/?name=harsh&id=01&passwrod=passwrod").onComplete(httpClientRequestAsyncResult ->
+        httpClient.request(HttpMethod.GET,8080,"0.0.0.0","/?name=harsh&id=01&passwrod=passwrod").onComplete(httpClientRequestAsyncResult ->
         {
            if(httpClientRequestAsyncResult.succeeded())
            {

@@ -70,22 +70,22 @@ public class FutureComposition extends AbstractVerticle
             }
         });
 
-//        CompositeFuture.join(exxecuteAfterTwoSeconds(),executeAfterFourSecond(),executeAfterSixSecond()).onComplete(event->
-//        {
-//            if(event.succeeded())
-//            {
-//                System.out.println("All tasks are executed successfully");
-//
-//                startPromise.complete();
-//            }
-//            else
-//            {
-//                System.out.println("Some task are failed "+event.cause().getMessage());
-//
-//                startPromise.fail("Some task are failed "+event.cause().getMessage());
-//            }
-//
-//        });
+        CompositeFuture.any(exxecuteAfterTwoSeconds(),executeAfterFourSecond(),executeAfterSixSecond()).onComplete(event->
+        {
+            if(event.succeeded())
+            {
+                System.out.println("All tasks are executed successfully");
+
+                startPromise.complete();
+            }
+            else
+            {
+                System.out.println("Some task are failed "+event.cause().getMessage());
+
+                startPromise.fail("Some task are failed "+event.cause().getMessage());
+            }
+
+        });
 
     }
 

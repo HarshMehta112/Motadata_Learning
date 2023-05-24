@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vert.x Java CRUD</title>
+</head>
+<body>
+<h1>Vert.x Java CRUD</h1>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>1</td>
+        <td>John Doe</td>
+        <td><a href="#">Update</a> | <a href="#">Delete</a></td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>Jane Doe</td>
+        <td><a href="#">Update</a> | <a href="#">Delete</a></td>
+    </tr>
+    </tbody>
+</table>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(function() {
+        $('a[href*="Update"]').click(function() {
+            var id = $(this).attr('href').split('/')[2];
+            $.ajax({
+                url: '/update/' + id,
+                type: 'GET',
+                success: function(data) {
+                    $('#name').val(data.name);
+                }
+            });
+        });
+
+        $('a[href*="Delete"]').click(function() {
+            var id = $(this).attr('href').split('/')[2];
+            $.ajax({
+                url: '/delete/' + id,
+                type: 'DELETE',
+                success: function() {
+                    $('#' + id).remove();
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

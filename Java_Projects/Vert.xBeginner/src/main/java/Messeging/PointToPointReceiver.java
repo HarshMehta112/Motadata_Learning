@@ -3,6 +3,7 @@ package Messeging;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.EventBus;
+import io.vertx.core.json.JsonObject;
 
 
 public class PointToPointReceiver extends AbstractVerticle
@@ -12,13 +13,15 @@ public class PointToPointReceiver extends AbstractVerticle
 
         Vertx vertx = Vertx.vertx();
 
-        vertx.deployVerticle(new Sender());
+        vertx.deployVerticle(new PointToPointSender());
 
-        vertx.deployVerticle(new Receiver());
+        vertx.deployVerticle(new PointToPointReceiver());
     }
 
     public void start()
     {
+
+
         EventBus eventBus = vertx.eventBus();
 
         eventBus.consumer("Harsh.Test.PointToPoint", stringMessage -> {

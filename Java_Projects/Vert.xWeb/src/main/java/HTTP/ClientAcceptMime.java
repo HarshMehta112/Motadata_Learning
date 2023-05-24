@@ -19,7 +19,7 @@ public class ClientAcceptMime extends AbstractVerticle
 
         Router router = Router.router(vertx);
 
-        router.route("/some/path").consumes("/application/json").produces("text/plain").respond(context->
+        router.route("/some/path").consumes("application/json").produces("text/plain").respond(context->
         {
             System.out.println("Hello I am in consumes(\"/application/json\").produces(\"text/plain\") ");
 

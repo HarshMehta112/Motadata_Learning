@@ -3,6 +3,7 @@ package Messeging;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.EventBus;
+import io.vertx.core.eventbus.EventBusOptions;
 
 
 public class Receiver extends AbstractVerticle

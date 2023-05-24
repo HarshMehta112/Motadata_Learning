@@ -18,14 +18,14 @@ public class Sender extends AbstractVerticle
                    "Hello All, I am Harsh Mehta",
                    new DeliveryOptions().setSendTimeout(3000),
                    response-> {
-              if( response.succeeded() )
-              {
-                  System.out.println("result: "+response.result().body());
-              }
-              else
-              {
-                  System.out.println("no response");
-              }
+//              if( response.succeeded() )
+//              {
+//                  System.out.println("result: "+response.result().body());
+//              }
+//              else
+//              {
+//                  System.out.println("no response");
+//              }
            });
         });
 
