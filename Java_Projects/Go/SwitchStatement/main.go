@@ -8,7 +8,7 @@ import "fmt"
 
 // Constant case labels cannot be duplicated but dynamic or conditional case statements duplicate are allowed
 
-func main() {
+func main1() {
 
 	language := "Python"
 

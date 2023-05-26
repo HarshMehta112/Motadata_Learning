@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func main1() {
+func main() {
 
 	name := "Harsh"
 

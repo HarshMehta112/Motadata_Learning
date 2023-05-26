@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-func main2() {
+func main() {
 
 	// the & (ampersand) operator also known as address of operator returns the memory address of a variable.
 	name := "HArsh"
