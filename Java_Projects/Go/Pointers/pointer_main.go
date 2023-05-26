@@ -5,7 +5,8 @@ import (
 	"strings"
 )
 
-func main() {
+func main1() {
+
 	name := "Harsh"
 
 	fmt.Println(name)

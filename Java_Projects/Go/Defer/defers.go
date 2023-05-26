@@ -21,7 +21,7 @@ func output() {
 }
 
 func main() {
-	// LIFO
+	// LIFO property
 	defer Third()
 	first()
 	output()
