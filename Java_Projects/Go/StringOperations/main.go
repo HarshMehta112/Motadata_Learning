@@ -72,5 +72,31 @@ func main() {
 
 	fmt.Printf("%T\n", s)
 
-	fmt.Printf("strings.Split() result : %#v\n", s) // => strings.Split():[]string{"a", "b", "c"}
+	fmt.Printf("\nstrings.Split() result : %#v\n", s) // => strings.Split():[]string{"a", "b", "c"}
+
+	// if the seperator is empty Split function splits aftereach UTF 8 rune literal
+	s = strings.Split("Go for GO !", "")
+
+	fmt.Printf("Result of empty seperator : %#v\n", s) // -> []string{"G", "o", " ", "f", "o", "r", " ", "G", "o", "!"}
+
+	// Join() concatenates the elements of a slice of strings to create a single string.
+	// The separator string is placed between elements in the resulting string.
+	s = []string{"I", "learn", "Golang"}
+	j := strings.Join(s, " ")
+	fmt.Printf("%T\n", j) // -> string
+	print(j)              // -> I learn Golang
+
+	// splitting a string by whitespaces and newlines.
+	myStr = "Orange Green \n Blue Yellow"
+	fields := strings.Fields(myStr) // it returns a slice of strings
+	fmt.Printf("%T\n", fields)      // -> []string
+	fmt.Printf("%#v\n", fields)     // -> []string{"Orange", "Green", "Blue", "Yellow"}
+
+	// TrimSpace() removes leading and trailing whitespaces and tabs.
+	s1 := strings.TrimSpace("\t Goodbye Windows, Welcome Linux!\n ")
+	fmt.Printf("%s\n", s1) // "Goodbye Windows, Welcome Linux!"
+
+	// To remove other leading and trailing characters, use Trim()
+	s2 := strings.Trim("...Hello, Gophers!!!?", ".!?")
+	fmt.Printf("%q\n", s2) // "Hello, Gophers"
 }
