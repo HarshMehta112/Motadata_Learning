@@ -18,6 +18,8 @@ func main() {
 
 	fmt.Printf("%#v\n", a2)
 
+	fmt.Printf("%#v\n", a1)
+
 	a3 := [...]string{
 		"Harsh",
 		"Sankalp",
