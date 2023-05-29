@@ -24,6 +24,7 @@ func main() {
 	// LIFO property
 	defer Third()
 	first()
-	output()
+	//output()
 	defer Second()
+	panic("Some Panic occured")
 }

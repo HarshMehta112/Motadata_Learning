@@ -37,7 +37,7 @@ func main() {
 
 	fmt.Printf("Harsh Debug : %#v\n", newCars)
 
-	cars[0] = "Nissan"                              // only cars is modified
+	cars[0] = "Nissan"                              // only cars is modified   .... why?
 	fmt.Println("cars:", cars, "newCars:", newCars) // => cars: [Nissan Honda Audi Range Rover] newCars: [Ford Honda]
 
 }
