@@ -54,6 +54,7 @@ func main() {
 	// 2.
 	// Call wg.Add(n) method before attempting to
 	// launch the go routine.
+
 	wg.Add(1) //  n which is 1 is the number of goroutines to wait for
 
 	// Launching a goroutine

@@ -30,7 +30,7 @@ func main() {
 	defer close(channel)
 
 	go func() {
-		go fact(10, channel)
+		go fact(5, channel)
 
 		fmt.Println("In first", <-channel)
 
@@ -39,7 +39,7 @@ func main() {
 
 	go func() {
 
-		go fact(1000000, channel)
+		go fact(10, channel)
 
 		fmt.Println("In Second", <-channel)
 

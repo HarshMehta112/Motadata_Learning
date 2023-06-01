@@ -2,16 +2,17 @@ package main
 
 import (
 	"fmt"
+	"time"
 )
 
 func server1(channel chan string) {
-	//time.Sleep(time.Second * 2)
+	time.Sleep(time.Second * 2)
 	channel <- "From server 1"
 
 }
 
 func server2(channel chan string) {
-	//time.Sleep(time.Second * 1)
+	time.Sleep(time.Second * 1)
 	channel <- "From Server 2"
 }
 

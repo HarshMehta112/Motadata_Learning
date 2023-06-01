@@ -65,6 +65,16 @@ func main() {
 
 	value, ok := balances["RON"]
 
+	/*
+		go gets default value if key
+		is not present in map, so we can't be
+		sure if key was present or not
+		To deal with this, go provides
+		another lookup function which returns key value
+		and bool value, where bool indicating
+		whether key was present or not
+	*/
+
 	if ok {
 		fmt.Println("The RON Balance is: ", value)
 	} else {
