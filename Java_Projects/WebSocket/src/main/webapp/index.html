@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<script>
+    var socket = new WebSocket("ws://localhost:8080/echo");
+    socket.onmessage = function (event) {
+        alert(event.data);
+    }
+</script>
+<div>
+    <form action="onMessage">
+        <button onclick="socket.send('hello')">send</button>
+    </form>
+</div>
+
+</body>
+</html>

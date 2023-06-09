@@ -55,25 +55,13 @@ public class Operations
 
         for ( int index = 0; index < columnNames.size(); index++ )
         {
-            setClause += columnNames.get(index)+"= ?";
+            setClause += columnNames.get(index) + "= ?";
 
             if ( index != columnNames.size() - 1 )
             {
                 setClause += ",";
             }
         }
-
-//        ListIterator< String > listIterator = columnNames.listIterator();
-//
-//        while ( listIterator.hasNext() )
-//        {
-//            setClause += listIterator.next() + "= ?";
-//
-//            if ( listIterator.hasNext() )
-//            {
-//                setClause += ",";
-//            }
-//        }
 
         String query = "UPDATE " + tableName + " SET " + setClause + " WHERE " + whereClause;
 
@@ -104,8 +92,7 @@ public class Operations
     }
 
     // Select operation
-    public List< Map< String, Object > > select (String tableName, ArrayList< String > columnNames,
-                                                 String whereClause) throws SQLException
+    public List< Map< String, Object > > select (String tableName, ArrayList< String > columnNames, String whereClause) throws SQLException
     {
 
         String columns = String.join(",", columnNames);
@@ -126,9 +113,9 @@ public class Operations
             {
                 Map< String, Object > row = new HashMap<>();
 
-                for ( int j = 1; j <= columnCount; j++ )
+                for ( int iterator = 1; iterator <= columnCount; iterator++ )
                 {
-                    row.put(metaData.getColumnName(j), resultSet.getObject(j));
+                    row.put(metaData.getColumnName(iterator), resultSet.getObject(iterator));
                 }
                 resultList.add(row);
             }

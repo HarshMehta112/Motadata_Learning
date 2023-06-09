@@ -1,0 +1,117 @@
+* {
+    font-family: sans-serif;
+}
+#toast-container > div {
+    opacity:1;
+}
+.wrapper {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: 200px;
+}
+.availabilitywrapper {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: 200px;
+}
+.healthwrapper {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: 200px;
+}
+#one{
+    color: #000;
+    background-color: #ff7848;
+    margin: 10px;
+    padding: 50px;
+}
+#two{
+    color: #000;
+    background-color: #9efc41;
+    margin: 10px;
+    padding: 50px;
+}
+#three{
+    color: #000;
+    background-color: #ffff46;
+    margin: 10px;
+    padding: 50px;
+}
+#four{
+    color: #000;
+    background-color: #dedede;
+    margin: 10px;
+    padding: 50px;
+}
+#one1{
+    color: #000;
+    background-color: #ff2600;
+    margin: 10px;
+    padding: 50px;
+}
+#two1{
+    color: #000;
+    background-color: #ff9900;
+    margin: 10px;
+    padding: 50px;
+}
+#three1{
+    color: #000;
+    background-color: #ffea00;
+    margin: 10px;
+    padding: 50px;
+}
+#four1{
+    color: #000000;
+    background-color: #72ff00;
+    margin: 10px;
+    padding: 50px;
+}
+
+.monitorTitle {
+    font-family: sans-serif;
+    text-shadow: 1px 1px 5px lightgray;
+    letter-spacing: 5px;
+    text-align: center;
+    alignment: center;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+tr:hover {background-color: royalblue;}
+
+#toprtt {
+    grid-row: 1 / 3;
+    grid-column: 1 / 2;
+}
+#monitorgroup {
+    grid-row: 1 / 3;
+    grid-column: 2 / 4;
+}
+#topcpu {
+    grid-row: 3 / 5;
+}
+#topmemory {
+    grid-row: 3 / 5;
+}
+#topdisk {
+    grid-row: 3 / 5;
+}
+
+
+.tabletitle {
+    font-family: sans-serif;
+    text-shadow: 1px 1px 5px lightgray;
+    text-align: center;
+    alignment: center;
+    color: #001F3F;
+}

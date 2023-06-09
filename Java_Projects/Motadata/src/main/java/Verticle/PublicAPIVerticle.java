@@ -1,0 +1,171 @@
+package Verticle;
+
+import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Promise;
+import io.vertx.core.eventbus.EventBus;
+import io.vertx.core.http.HttpServerOptions;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.net.JksOptions;
+import io.vertx.ext.auth.properties.PropertyFileAuthentication;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.*;
+import io.vertx.ext.web.sstore.LocalSessionStore;
+import Utils.Constants;
+
+
+public class PublicAPIVerticle extends AbstractVerticle
+{
+    EventBus eventBus;
+
+    @Override
+    public void start(Promise<Void> startPromise) throws Exception
+    {
+        eventBus = vertx.eventBus();
+
+        Router router = Router.router(vertx);
+
+        try
+        {
+            router.route().handler(BodyHandler.create());
+
+            router.route().handler(SessionHandler.create(LocalSessionStore.create(vertx)));
+
+            PropertyFileAuthentication authentication = PropertyFileAuthentication.create(vertx, Constants.PROPERTY_FILE_PATH);
+
+            router.route().handler(StaticHandler.create().setCachingEnabled(false).setIndexPage("login.html"));
+
+            router.route("/login/*").handler(RedirectAuthHandler.create(authentication,"login.html"));
+
+            router.post("/loginHandler").handler(FormLoginHandler.create(authentication)).failureHandler(context->
+            {
+                context.reroute("/login/");
+            });
+
+            router.route("/login/*").handler(StaticHandler.create().setCachingEnabled(false).setIndexPage("Navigation.html"));
+
+            router.route("/login/Add").handler(routingContext ->
+            {
+                eventBus.request(Constants.DISCOVERY_ADD_DEVICE,routingContext.body().asJsonObject(),response->
+                {
+                   if(response.succeeded())
+                   {
+                       routingContext.response().setStatusCode(200).end("added");
+
+                       System.out.println("Discovery Device Added");
+                   }
+                   else
+                   {
+                       routingContext.response().end("Not Added");
+
+                       System.out.println("Discovery Device Not Added");
+                   }
+                });
+
+            });
+
+
+            router.route("/login/Load").handler(routingContext ->
+            {
+                eventBus.<JsonArray>request(Constants.DISCOVERY_GET_ALL_DEVICE,"", response->
+                {
+                    if(response.succeeded())
+                    {
+                        System.out.println(response.result().body());
+
+                        routingContext.response().setStatusCode(200).end(response.result().body().encodePrettily());
+                    }
+                    else
+                    {
+                        System.out.println("Some Problem in loading Discovery Devices");
+
+                        routingContext.response().end("Some Problem in loading Discovery Devices");
+                    }
+                });
+            });
+
+
+            router.route("/login/Delete*").handler(routingContext ->
+            {
+               eventBus.request(Constants.DISCOVERY_DELETE_DEVICE,routingContext.request().getParam("id"),response->
+               {
+                    if(response.succeeded())
+                    {
+                        routingContext.response().setStatusCode(200).end("Discovery Device Deleted");
+                    }
+                    else
+                    {
+                        routingContext.response().end("Some problem in deleting the discovery device");
+                    }
+               });
+            });
+
+
+            router.route("/login/RunDiscovery").handler(routingContext ->
+            {
+               eventBus.request(Constants.RUN_DISCOVERY,routingContext.request().getParam("id"),response->
+                {
+                    if(response.succeeded())
+                    {
+                        routingContext.response().setStatusCode(200).end("Device discovered successfully");
+                    }
+                    else
+                    {
+                        routingContext.response().end("Device not discovered");
+                    }
+                });
+            });
+
+
+            router.route("/login/Edit").handler(routingContext ->
+            {
+                System.out.println(routingContext.body().asJsonObject());
+
+                eventBus.request(Constants.DISCOVERY_EDIT_DEVICE,routingContext.body().asJsonObject(),response->
+                {
+                    if(response.succeeded())
+                    {
+                        routingContext.response().setStatusCode(200).end("Edited");
+
+                        System.out.println("Discovery Device Edited");
+                    }
+                    else
+                    {
+                        routingContext.response().end("Not Edited");
+
+                        System.out.println("Discovery Device Not Edited");
+                    }
+                });
+            });
+
+
+
+            router.route("/logout").handler(context -> {
+
+                context.clearUser();
+
+                context.response().putHeader("location", "/login").setStatusCode(302).end();
+            });
+        }
+        catch (Exception exception)
+        {
+            exception.printStackTrace();
+        }
+
+        vertx.createHttpServer(new HttpServerOptions().setSsl(true).setKeyStoreOptions(new JksOptions().setPath(
+                        Constants.SSL_KEYSTORE_PATH).setPassword(Constants.SSL_PASSWORD)))
+                .requestHandler(router).listen(8080).onComplete(ready ->
+        {
+            if(ready.succeeded())
+            {
+                System.out.println("server started listening on port no 8080");
+
+                startPromise.complete();
+            }
+            else
+            {
+                startPromise.fail("some error occurred with server" + ready.cause().getMessage());
+            }
+        });
+
+    }
+}

@@ -21,13 +21,13 @@ public class Main
     {
         connection = DriverManager.getConnection(DB_URL,USER,PASS);
 
+        Operations operations = new Operations(connection);
+
         HashMap<String,Object> map = new HashMap<>();
 
         map.put("EMPNO",97);
 
         map.put("EMPNAME","VIRAMSIR");
-
-        Operations operations = new Operations(connection);
 
         operations.insert("EMPLOYEE",map);
 
@@ -37,10 +37,11 @@ public class Main
 
         colums.add("IP");
 
+        System.out.println(operations.select("PRACTICE",colums,"RTT>0"));
+
         operations.update("EMPLOYEE",map,"EMPNAME='Sankalp'");
 
         operations.delete("ORDERS","ORDERID=10308");
 
-        System.out.println(operations.select("PRACTICE",colums,"RTT>0"));
     }
 }

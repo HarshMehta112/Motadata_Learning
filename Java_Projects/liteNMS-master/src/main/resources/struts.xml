@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+        "http://struts.apache.org/dtds/struts-2.5.dtd">
+
+<struts>
+
+    <constant name="struts.action.excludePattern" value=".*server-endpoint"/>
+
+    <package name="Start" namespace="/" extends="struts-default">
+        <interceptors>
+            <interceptor name="userSession" class="com.motadata.kernel.helper.SessionInterceptor" />
+        </interceptors>
+
+        <action name="">
+            <result>login.jsp</result>
+        </action>
+    </package>
+
+    <package name="Main" extends="json-default,struts-default">
+
+        <result-types>
+            <result-type name="json" class="org.apache.struts2.json.JSONResult">
+                <param name="noCache">true</param>
+                <param name="excludeNullProperties">true</param>
+                <param name="enableGZIP">true</param>
+            </result-type>
+        </result-types>
+
+        <interceptors>
+            <interceptor name="userSession" class="com.motadata.kernel.helper.SessionInterceptor" />
+            <interceptor-stack name="loginSession">
+                <interceptor-ref name="userSession"/>
+                <interceptor-ref name="defaultStack"/>
+            </interceptor-stack>
+        </interceptors>
+
+        <global-results>
+            <result name="loginUser" type="redirect">login.jsp</result>
+        </global-results>
+
+        <!--++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-->
+
+        <action name="Login" class="com.motadata.kernel.action.LoginAction" method="login">
+            <result name="LOGIN" type="json"/>
+        </action>
+        <action name="Register" class="com.motadata.kernel.action.LoginAction" method="register">
+            <result name="REGISTER" type="json"/>
+        </action>
+        <action name="Logout" class="com.motadata.kernel.action.LoginAction" method="logout">
+            <result name="LOGOUT" type="json"/>
+        </action>
+
+        <!--++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-->
+
+        <action name="Load" class="com.motadata.kernel.action.MonitorAction" method="load">
+            <interceptor-ref name="loginSession"/>
+            <result name="LOADED" type="json"/>
+        </action>
+        <action name="Add" class="com.motadata.kernel.action.MonitorAction" method="add">
+            <interceptor-ref name="loginSession"/>
+            <result name="ADDED" type="json"/>
+        </action>
+        <action name="autodiscover" class="com.motadata.kernel.action.MonitorAction" method="autoDiscover">
+            <interceptor-ref name="loginSession"/>
+            <result name="DISCOVERED" type="json"/>
+        </action>
+        <action name="AddPolling" class="com.motadata.kernel.action.MonitorAction" method="addDiscovery">
+            <interceptor-ref name="loginSession"/>
+            <result name="ADDED" type="json"/>
+        </action>
+        <action name="Edit" class="com.motadata.kernel.action.MonitorAction" method="edit">
+            <interceptor-ref name="loginSession"/>
+            <result name="EDITED" type="json"/>
+        </action>
+        <action name="EditData" class="com.motadata.kernel.action.MonitorAction" method="editData">
+            <interceptor-ref name="loginSession"/>
+            <result name="EDITDATA" type="json"/>
+        </action>
+        <action name="Delete" class="com.motadata.kernel.action.MonitorAction" method="delete">
+            <interceptor-ref name="loginSession"/>
+            <result name="DELETED" type="json"/>
+        </action>
+        <!--++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-->
+
+
+        <action name="AlertLoad" class="com.motadata.kernel.action.AlertAction" method="load">
+            <result name="LOADED" type="json"/>
+        </action>
+        <action name="AlertAdd" class="com.motadata.kernel.action.AlertAction" method="add">
+            <result name="ADDED" type="json"/>
+        </action>
+        <action name="AlertDelete" class="com.motadata.kernel.action.AlertAction" method="delete">
+            <result name="DELETED" type="json"/>
+        </action>
+
+        <!--++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-->
+
+        <action name="LoadPolling" class="com.motadata.kernel.action.PollingMonitorAction" method="load">
+            <interceptor-ref name="loginSession"/>
+            <result name="LOADED" type="json"/>
+        </action>
+        <action name="emailalerts" class="com.motadata.kernel.action.PollingMonitorAction" method="emailAlerts">
+            <interceptor-ref name="loginSession"/>
+            <result name="EMAILUPDATED" type="json"/>
+        </action>
+        <action name="PollingStatistic" class="com.motadata.kernel.action.PollingMonitorAction" method="show">
+            <interceptor-ref name="loginSession"/>
+            <result name="SHOW" type="json"/>
+        </action>
+        <action name="DeletePolling" class="com.motadata.kernel.action.PollingMonitorAction" method="delete">
+            <interceptor-ref name="loginSession"/>
+            <result name="DELETED" type="json"/>
+        </action>
+
+        <!--++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-->
+
+        <action name="LoadDashboard" class="com.motadata.kernel.action.DashboardAction" method="load">
+            <interceptor-ref name="loginSession"/>
+            <result name="LOADED" type="json"/>
+        </action>
+
+        <!--++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-->
+
+        <action name="Profile" class="com.motadata.kernel.action.LoginAction" method="profile">
+            <interceptor-ref name="loginSession"/>
+            <result name="PROFILE" type="json"/>
+        </action>
+
+        <!--++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-->
+
+        <action name="Navigation">
+            <interceptor-ref name="userSession" />
+            <result>WEB-INF/navigation.jsp</result>
+        </action>
+        <action name="LoginPage">
+            <result>login.jsp</result>
+        </action>
+
+    </package>
+</struts>
