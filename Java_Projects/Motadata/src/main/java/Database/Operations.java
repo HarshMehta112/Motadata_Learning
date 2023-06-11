@@ -19,7 +19,7 @@ public class Operations
 
     //insert operation
 
-    public int insert (String tableName, Map< String, Object > data) throws SQLException
+    public int insert (String tableName, Map< String, Object > data,String whereClause) throws SQLException
     {
 
         ArrayList< String > columnNames = new ArrayList<>(data.keySet());
@@ -64,8 +64,6 @@ public class Operations
         }
 
         String query = "UPDATE " + tableName + " SET " + setClause + " WHERE " + whereClause;
-
-        System.out.println(query);
 
         try ( PreparedStatement statement = connection.prepareStatement(query) )
         {

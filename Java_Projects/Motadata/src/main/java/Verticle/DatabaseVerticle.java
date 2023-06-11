@@ -1,6 +1,8 @@
 package Verticle;
 
 import Utils.Constants;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
@@ -8,8 +10,8 @@ import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import Database.*;
-
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -82,6 +84,78 @@ public class DatabaseVerticle extends AbstractVerticle
             });
         });
 
+        eventBus.consumer(Constants.SSH_POLLING_PROCESS_TRIGGERED,handler->
+        {
+            fetchMonitorData().onComplete(result->
+            {
+                if(fetchMonitorData().succeeded())
+                {
+                    JsonArray fetchDataFromMonitorTable = fetchMonitorData().result();
+
+                    handler.reply(fetchDataFromMonitorTable);
+                }
+                else
+                {
+                    handler.reply("Enable to fetch the Discovery Data from Database for ssh polling");
+                }
+            });
+        });
+
+        eventBus.consumer(Constants.AVAILABILITY_POLLING_PROCESS_TRIGGERED,handler->
+        {
+            fetchDataForAvailabilityPolling().onComplete(arrayListAsyncResult ->
+            {
+                System.out.println(fetchDataForAvailabilityPolling());
+
+               if(fetchDataForAvailabilityPolling().succeeded())
+               {
+                   ArrayList<String> list = fetchDataForAvailabilityPolling().result();
+
+                   handler.reply(list);
+               }
+               else
+               {
+                   handler.reply("Enable to fetch the Discovery Data from Database for availibaliy polling");
+               }
+            });
+        });
+
+
+
+        eventBus.consumer(Constants.AVAILABILITY_POLLING_DATA,handler->
+        {
+           fpingPollingDataDump((HashMap<String, String>) handler.body()).onComplete(result->
+           {
+               if(result.succeeded())
+               {
+                   System.out.println("availability Polling data dumped into database successfully");
+               }
+               else
+               {
+                   System.out.println("Some problem in availability polling data dumping");
+
+                   System.out.println(result.cause().getMessage());
+               }
+           });
+        });
+
+        eventBus.consumer(Constants.SSH_POLLING_DATA,handler->
+        {
+            sshPollingDataDump((JsonNode) handler.body()).onComplete(result->
+            {
+               if(result.succeeded())
+               {
+                   System.out.println("ssh Polling data dumped into database successfully");
+               }
+               else
+               {
+                   System.out.println("Some problem in ssh polling data dumping");
+
+                   System.out.println(result.cause().getMessage());
+               }
+            });
+        });
+
 
         eventBus.consumer(Constants.DISCOVERY_DELETE_DEVICE,handler->
         {
@@ -105,23 +179,28 @@ public class DatabaseVerticle extends AbstractVerticle
         {
             System.out.println(handler.body());
 
-            discovery(handler.body().toString()).onComplete(result->
+            fetchDiscoveryDatabyID(handler.body().toString()).onComplete(result->
             {
 
-                eventBus.request(Constants.RUN_DISCOVERY_SPAWN_PEROCESS,discovery(handler.body().toString()).result(),response->
+                eventBus.request(Constants.RUN_DISCOVERY_SPAWN_PEROCESS,fetchDiscoveryDatabyID(handler.body().toString()).result(),response->
                 {
                     if(response.succeeded())
                     {
                         String deviceId = response.result().body().toString();
 
-                        if(updateDiscovery(deviceId).succeeded())
-                        {
-                            System.out.println("Discovery Table Updated with Provision value");
-                        }
-                        else
-                        {
-                            System.out.println("Some Problem in Updating the Provision value");
-                        }
+                       if(!deviceId.equals(""))
+                       {
+                           System.out.println(deviceId);
+
+                           if(updateDiscovery(deviceId).succeeded())
+                           {
+                               System.out.println("Discovery Table Updated with Provision value");
+                           }
+                           else
+                           {
+                               System.out.println("Some Problem in Updating the Provision value");
+                           }
+                       }
                     }
                     else
                     {
@@ -129,7 +208,7 @@ public class DatabaseVerticle extends AbstractVerticle
                     }
                 });
 
-                if(discovery(handler.body().toString()).succeeded())
+                if(fetchDiscoveryDatabyID(handler.body().toString()).succeeded())
                 {
                     handler.reply("Device discovered successfully");
                 }
@@ -173,7 +252,64 @@ public class DatabaseVerticle extends AbstractVerticle
 
     }
 
-    private Future<JsonObject> discovery(String deviceID)
+
+    private Future<JsonArray> fetchMonitorData()
+    {
+        Promise<JsonArray> promise = Promise.promise();
+
+        JsonArray inputDataForSSHPolling = null;
+
+        Connection connection = connectionPool.getConnection();
+
+        try
+        {
+            Operations operations = new Operations(connection);
+
+            List<Map<String, Object>> allData = null;
+
+            ArrayList<String> columns = new ArrayList<>();
+
+            columns.add("IPADDRESS");
+
+            columns.add("USERNAME");
+
+            columns.add("PASSWORD");
+
+            columns.add("TYPE");
+
+            columns.add("DEVICEID");
+
+            allData = operations.selectwithWhere("MONITOR_TABLE",columns,"");
+
+            System.out.println(allData);
+
+            inputDataForSSHPolling = new JsonArray();
+
+            inputDataForSSHPolling.add(allData.get(0));
+
+            System.out.println(inputDataForSSHPolling.getValue(0));
+
+            JsonObject jsonObject = (JsonObject) inputDataForSSHPolling.getJsonObject(0);
+
+            System.out.println(jsonObject);
+
+            jsonObject.put("category","polling");
+
+            inputDataForSSHPolling.add(0,jsonObject);
+
+            promise.complete(inputDataForSSHPolling);
+        }
+        catch (Exception exception)
+        {
+            exception.printStackTrace();
+        }
+        finally {
+            connectionPool.releaseConnection(connection);
+        }
+        return promise.future();
+    }
+
+    private Future<JsonObject> fetchDiscoveryDatabyID(String deviceID)
     {
         Promise<JsonObject> promise = Promise.promise();
 
@@ -191,7 +327,9 @@ public class DatabaseVerticle extends AbstractVerticle
 
             columns.add("IPADDRESS");
 
-            columns.add("CREDENTIAL");
+            columns.add("USERNAME");
+
+            columns.add("PASSWORD");
 
             columns.add("TYPE");
 
@@ -199,11 +337,9 @@ public class DatabaseVerticle extends AbstractVerticle
 
             allData = operations.selectwithWhere("DISCOVERY_TABLE",columns,whereCluase);
 
-            JsonObject credential = new JsonObject(allData.get(0).get("CREDENTIAL").toString());
+            credentialData.put("username",allData.get(0).get("USERNAME"));
 
-            credentialData.put("username",credential.getValue("username"));
-
-            credentialData.put("password",credential.getValue("password"));
+            credentialData.put("password",allData.get(0).get("PASSWORD"));
 
             credentialData.put("ip",allData.get(0).get("IPADDRESS"));
 
@@ -228,7 +364,6 @@ public class DatabaseVerticle extends AbstractVerticle
     }
 
 
-
     private Future<List<Map<String,Object>>> loadData()
     {
         Promise<List<Map<String,Object>>> promise = Promise.promise();
@@ -248,8 +383,6 @@ public class DatabaseVerticle extends AbstractVerticle
             columns.add("IPADDRESS");
 
             columns.add("TYPE");
-
-            columns.add("TAG");
 
             columns.add("DEVICEID");
 
@@ -273,6 +406,51 @@ public class DatabaseVerticle extends AbstractVerticle
     }
 
 
+    private Future<ArrayList> fetchDataForAvailabilityPolling()
+    {
+        Promise<ArrayList> promise = Promise.promise();
+
+        Connection connection = connectionPool.getConnection();
+
+        ArrayList<String> result = new ArrayList<>();
+
+        try
+        {
+            Operations operations = new Operations(connection);
+
+            ArrayList<String> columns = new ArrayList<>();
+
+            columns.add("IPADDRESS");
+
+            List<Map<String, Object>> selectResult = operations.select("MONITOR_TABLE",columns);
+
+            for(int index=0;index<selectResult.size();index++)
+            {
+                String ip = selectResult.get(index).get("IPADDRESS").toString();
+
+                result.add(ip);
+            }
+
+            System.out.println("in fetchData function "+result);
+
+            promise.complete(result);
+
+        }
+        catch (Exception exception)
+        {
+            promise.fail("Some error in fetching data for availibality polling");
+
+            exception.printStackTrace();
+        }
+        finally
+        {
+            connectionPool.releaseConnection(connection);
+        }
+
+        return promise.future();
+
+    }
+
 
 
     private Future<Boolean> AddDevice(JsonObject credentialData)
@@ -293,13 +471,13 @@ public class DatabaseVerticle extends AbstractVerticle
 
             data.put("TYPE",credentialData.getValue("type"));
 
-            data.put("CREDENTIAL",(new JsonObject()
-                    .put("username",credentialData.getValue("username"))
-                    .put("password",credentialData.getValue("password"))).toString());
+            data.put("USERNAME",credentialData.getValue("username"));
 
-            data.put("TAG",credentialData.getValue("tag"));
+            data.put("PASSWORD",credentialData.getValue("password"));
 
-            operations.insert("DISCOVERY_TABLE",data);
+//            data.put("TAG",credentialData.getValue("tag"));
+
+            operations.insert("DISCOVERY_TABLE",data,"");
 
             promise.complete(true);
         }
@@ -369,11 +547,11 @@ public class DatabaseVerticle extends AbstractVerticle
 
             data.put("TYPE",credentialData.getValue("type"));
 
-            data.put("CREDENTIAL",(new JsonObject()
-                    .put("username",credentialData.getValue("username"))
-                    .put("password",credentialData.getValue("password"))).toString());
+            data.put("USERNAME",credentialData.getValue("username"));
 
-            data.put("TAG",credentialData.getValue("tag"));
+            data.put("PASSWORD",credentialData.getValue("password"));
+
+            data.put("PROVISION",false);
 
             String whereClause = "DEVICEID = "+credentialData.getString("id");
 
@@ -392,6 +570,217 @@ public class DatabaseVerticle extends AbstractVerticle
             connectionPool.releaseConnection(connection);
         }
         return promise.future();
+    }
+
+
+    private Future<Boolean> sshPollingDataDump(JsonNode data)
+    {
+        Promise<Boolean> promise = Promise.promise();
+
+        Connection connection = connectionPool.getConnection();
+
+        try
+        {
+            ObjectMapper mapper = new ObjectMapper();
+
+            JsonNode jsonArray = mapper.readTree(String.valueOf(data));
+
+            for (JsonNode jsonObject : jsonArray)
+            {
+                batchExecute(jsonObject);
+            }
+            promise.complete(true);
+        }
+        catch (Exception exception)
+        {
+            promise.complete(false);
+
+            exception.printStackTrace();
+        }
+        finally
+        {
+            connectionPool.releaseConnection(connection);
+        }
+        return promise.future();
+
+    }
+
+    private Future<Boolean> fpingPollingDataDump(HashMap<String,String > map)
+    {
+        Promise<Boolean> promise = Promise.promise();
+
+        Connection connection = connectionPool.getConnection();
+
+        try
+        {
+            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO AVAILABILITY_TABLE(IPADDRESS,STATUS) VALUES(?,?)");
+
+            for(Map.Entry m: map.entrySet())
+            {
+                preparedStatement.setString(1,m.getKey().toString());
+
+                preparedStatement.setString(2,m.getValue().toString());
+
+                preparedStatement.addBatch();
+            }
+            preparedStatement.executeBatch();
+
+            promise.complete(true);
+        }
+        catch (Exception exception)
+        {
+            promise.fail("Some error in dumping avaliliblaty data in Ddatabse");
+
+            promise.complete(false);
+
+            exception.printStackTrace();
+        }
+        finally
+        {
+            connectionPool.releaseConnection(connection);
+        }
+        return promise.future();
+    }
+
+    private void batchExecute(JsonNode data)
+    {
+        Connection connection = connectionPool.getConnection();
+
+        try
+        {
+            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO POLLING_TABLE VALUES(?,?,?,?,?)");
+
+            preparedStatement.setObject(1,data.get("id").asText());
+
+            preparedStatement.setObject(2,data.get("ip").asText());
+
+            preparedStatement.setObject(3,"cpu.idle.percentage");
+
+            preparedStatement.setObject(4,data.get("cpu.idle.percentage").asText());
+
+            preparedStatement.setObject(5,data.get("timestamp").asText());
+
+            preparedStatement.addBatch();
+
+            preparedStatement.setObject(1,data.get("id").asText());
+
+            preparedStatement.setObject(2,data.get("ip").asText());
+
+            preparedStatement.setObject(3,"cpu.system.percentage");
+
+            preparedStatement.setObject(4,data.get("cpu.system.percentage").asText());
+
+            preparedStatement.setObject(5,data.get("timestamp").asText());
+
+            preparedStatement.addBatch();
+
+            preparedStatement.setObject(1,data.get("id").asText());
+
+            preparedStatement.setObject(2,data.get("ip").asText());
+
+            preparedStatement.setObject(3,"cpu.user.percentage");
+
+            preparedStatement.setObject(4,data.get("cpu.user.percentage").asText());
+
+            preparedStatement.setObject(5,data.get("timestamp").asText());
+
+            preparedStatement.addBatch();
+
+            preparedStatement.setObject(1,data.get("id").asText());
+
+            preparedStatement.setObject(2,data.get("ip").asText());
+
+            preparedStatement.setObject(3,"disk.used.percentage");
+
+            preparedStatement.setObject(4,data.get("disk.used.percentage").asText());
+
+            preparedStatement.setObject(5,data.get("timestamp").asText());
+
+            preparedStatement.addBatch();
+
+            preparedStatement.setObject(1,data.get("id").asText());
+
+            preparedStatement.setObject(2,data.get("ip").asText());
+
+            preparedStatement.setObject(3,"memory.free.percentage");
+
+            preparedStatement.setObject(4,data.get("memory.free.percentage").asText());
+
+            preparedStatement.setObject(5,data.get("timestamp").asText());
+
+            preparedStatement.addBatch();
+
+            preparedStatement.setObject(1,data.get("id").asText());
+
+            preparedStatement.setObject(2,data.get("ip").asText());
+
+            preparedStatement.setObject(3,"memory.used.percentage");
+
+            preparedStatement.setObject(4,data.get("memory.used.percentage").asText());
+
+            preparedStatement.setObject(5,data.get("timestamp").asText());
+
+            preparedStatement.addBatch();
+
+            preparedStatement.setObject(1,data.get("id").asText());
+
+            preparedStatement.setObject(2,data.get("ip").asText());
+
+            preparedStatement.setObject(3,"operating.system.name");
+
+            preparedStatement.setObject(4,data.get("operating.system.name").asText());
+
+            preparedStatement.setObject(5,data.get("timestamp").asText());
+
+            preparedStatement.addBatch();
+
+            preparedStatement.setObject(1,data.get("id").asText());
+
+            preparedStatement.setObject(2,data.get("ip").asText());
+
+            preparedStatement.setObject(3,"operating.system.version");
+
+            preparedStatement.setObject(4,data.get("operating.system.version").asText());
+
+            preparedStatement.setObject(5,data.get("timestamp").asText());
+
+            preparedStatement.addBatch();
+
+            preparedStatement.setObject(1,data.get("id").asText());
+
+            preparedStatement.setObject(2,data.get("ip").asText());
+
+            preparedStatement.setObject(3,"system.name");
+
+            preparedStatement.setObject(4,data.get("system.name").asText());
+
+            preparedStatement.setObject(5,data.get("timestamp").asText());
+
+            preparedStatement.addBatch();
+
+            preparedStatement.setObject(1,data.get("id").asText());
+
+            preparedStatement.setObject(2,data.get("ip").asText());
+
+            preparedStatement.setObject(3,"uptime");
+
+            preparedStatement.setObject(4,data.get("uptime").asText());
+
+            preparedStatement.setObject(5,data.get("timestamp").asText());
+
+            preparedStatement.addBatch();
+
+            preparedStatement.executeBatch();
+
+        }
+        catch (Exception exception)
+        {
+            exception.printStackTrace();
+        }
+        finally
+        {
+            connectionPool.releaseConnection(connection);
+        }
     }
 
 

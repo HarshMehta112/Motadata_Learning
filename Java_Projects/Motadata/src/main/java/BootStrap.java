@@ -1,6 +1,8 @@
 import Verticle.DatabaseVerticle;
 import Verticle.DiscoveryEngine;
+import Verticle.PollingEngine;
 import Verticle.PublicAPIVerticle;
+import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 
 public class BootStrap
@@ -34,7 +36,7 @@ public class BootStrap
             }
         });
 
-        vertx.deployVerticle(DiscoveryEngine.class.getName()).onComplete(deplyment->
+        vertx.deployVerticle(DiscoveryEngine.class.getName(),new DeploymentOptions().setWorkerPoolSize(4)).onComplete(deplyment->
         {
             if(deplyment.succeeded())
             {
@@ -45,7 +47,17 @@ public class BootStrap
                 System.out.println("Some error occurred "+deplyment.cause().getMessage());
             }
         });
-
+        vertx.deployVerticle(PollingEngine.class.getName(),new DeploymentOptions().setWorkerPoolSize(4)).onComplete(deplyment->
+        {
+            if(deplyment.succeeded())
+            {
+                System.out.println("Public API deployed Successfully");
+            }
+            else
+            {
+                System.out.println("Some error occurred "+deplyment.cause().getMessage());
+            }
+        });
 
     }
 }

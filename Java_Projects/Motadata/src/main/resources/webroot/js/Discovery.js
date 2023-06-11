@@ -21,13 +21,13 @@ var discoverymain = {
             return finalParam;
         }, {})
 
-        if (discoveryhelper.validate(param.name, param.ip, param.type, param.tag, param.username, param.password))
+        if (discoveryhelper.validate(param.name, param.ip, param.type, param.username, param.password))
         {
             let request = {
 
                 url: "Add",
 
-                data: JSON.stringify({name:param.name,ip:param.ip,type:param.type,tag:param.tag,username:param.username,password:param.password}),
+                data: JSON.stringify({name:param.name,ip:param.ip,type:param.type,username:param.username,password:param.password}),
 
                 callback: discoverycallback.add,
 
@@ -55,7 +55,7 @@ var discoverymain = {
 
         param.id = id;
 
-        if (discoveryhelper.validate(param.name, param.ip, param.type, param.tag, param.username, param.password))
+        if (discoveryhelper.validate(param.name, param.ip, param.type, param.username, param.password))
         {
             let request = {
 
@@ -92,7 +92,7 @@ var discoverymain = {
 
             callback: discoverycallback.deletemonitor,
 
-            success:toastr.fail("discovery device deleted successfully")
+            success:toastr.success("discovery device deleted successfully")
         };
         genericAjaxCall.ajaxpost(request);
         discoverymain.onload();
@@ -113,9 +113,9 @@ var discoverymain = {
 
             data: {id},
 
-            success:toastr.success(ip,"discovery started successfully")
+            success:toastr.success(ip,"discovery started successfully"),
 
-            // callback: setTimeout(location.reload(),5000),
+            callback: location.reload,
 
         };
         genericAjaxCall.ajaxpost(request);
@@ -133,23 +133,23 @@ var discoveryhelper = {
         {
             if(value.PROVISION === false)
             {
-                table.row.add([value.DEVICEID,value.NAME, value.IPADDRESS, value.TYPE, value.TAG,
+                table.row.add([value.DEVICEID,value.NAME, value.IPADDRESS, value.TYPE,
                     "<button onclick='discoverymain.discover(event)' class='btn' style='margin-left: 5px'>Run</button>" +
                     "<button onclick='discoverycallback.editdata(event)'  class='btn' style='margin-left: 5px'>Edit</button>" +
                     "<button onclick='discoverymain.deletemonitor(event)' id='DeleteBtn'  class='btn' style='margin-left: 5px'>Delete</button>"]).draw();
             }
             else {
 
-                table.row.add([value.DEVICEID, value.NAME, value.IPADDRESS, value.TYPE, value.TAG,
+                table.row.add([value.DEVICEID, value.NAME, value.IPADDRESS, value.TYPE,
                     "<button onclick='discoverymain.discover(event)'  class='btn' style='margin-left: 5px'>Run</button>" +
-                    "<button  class='btn' style='margin-left: 5px'>Edit</button>" +
+                    "<button onclick='discoverycallback.editdata(event)' class='btn' style='margin-left: 5px'>Edit</button>" +
                     "<button onclick='discoverymain.deletemonitor(event)' id='DeleteBtn'  class='btn' style='margin-left: 5px'>Delete</button>" +
                     "<button  class='btn' style='margin-left: 5px'>Provision</button>"]).draw();
             }
         });
     },
 
-    validate: function (name, ip, type, tag, username, password)
+    validate: function (name, ip, type, username, password)
     {
         let ipformat = /^(25[0-5]|2[0-4][0-9]|[01]?[1-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
         if (name == "")
@@ -167,11 +167,7 @@ var discoveryhelper = {
             discoveryhelper.customalert(".failure", "Enter Valid IP");
             return false;
         }
-        if (tag == "")
-        {
-            discoveryhelper.customalert(".failure", "Enter Tag");
-            return false;
-        }
+
         if (type != "ping" && (username == "" || password == ""))
         {
             discoveryhelper.customalert(".failure", "Enter Username & Password");
@@ -232,7 +228,7 @@ var discoverycallback = {
     onload: function (data)
     {
         $("#monitors").dataTable().fnClearTable();
-        table = $('#monitors').DataTable({lengthMenu: [[3, 5, 10, 20, 50, 100, 200, 500],[50]],destroy:true,"bDestroy": true});
+        table = $('#monitors').DataTable({lengthMenu: [3, 5, 10, 20, 50, 100, 200, 500],destroy:true,"bDestroy": true});
 
         discoveryhelper.adddata(data, table);
     },
@@ -265,8 +261,6 @@ var discoverycallback = {
 
         let type = beforeEdittype;
 
-        let tag = beforeEdittag;
-
         $("#rawid").val(id);
 
         $("#updateip").val(ip);
@@ -274,8 +268,6 @@ var discoverycallback = {
         $("#updatename").val(name);
 
         $("#updatetype").val(type);
-
-        $("#updatetag").val(tag);
 
         if (type == "ssh")
         {

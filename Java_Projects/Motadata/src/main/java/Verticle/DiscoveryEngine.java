@@ -5,6 +5,7 @@ import Utils.SpawnProcess;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.eventbus.EventBus;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 public class DiscoveryEngine extends AbstractVerticle
@@ -22,17 +23,35 @@ public class DiscoveryEngine extends AbstractVerticle
 
             deviceDetails.put("category","discovery");
 
-            JsonObject discoveryResult = SpawnProcess.spwanprocess(deviceDetails);
+            JsonArray inputArray = new JsonArray().add(deviceDetails);
 
-            if(discoveryResult.getString(deviceDetails.getString("ip")).equals("success"))
+            try
             {
-                System.out.println("Hello"+deviceDetails.getString("id"));
+                vertx.executeBlocking(blockingHandler->
+                {
+                    System.out.println(Thread.currentThread().getName());
 
-                handler.reply(deviceDetails.getString("id"));
+                    System.out.println(deviceDetails);
+
+                    JsonObject discoveryResult = SpawnProcess.spwanProcessForDiscovery(inputArray);
+
+                    System.out.println(discoveryResult.getString(deviceDetails.getString("ip")));
+
+                    if(discoveryResult.getString(deviceDetails.getString("ip")).equals("success"))
+                    {
+                        handler.reply(deviceDetails.getString("id"));
+                    }
+                    else
+                    {
+                        handler.reply("");
+                    }
+
+                },false);
+
             }
-            else
+            catch (Exception exception)
             {
-                handler.reply("");
+                exception.printStackTrace();
             }
 
         });
