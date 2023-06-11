@@ -23,15 +23,17 @@ public class DiscoveryEngine extends AbstractVerticle
 
             deviceDetails.put("category","discovery");
 
+            System.out.println("Device Details "+deviceDetails);
+
             JsonArray inputArray = new JsonArray().add(deviceDetails);
+
+            System.out.println("Inpiut Array "+inputArray);
 
             try
             {
                 vertx.executeBlocking(blockingHandler->
                 {
                     System.out.println(Thread.currentThread().getName());
-
-                    System.out.println(deviceDetails);
 
                     JsonObject discoveryResult = SpawnProcess.spwanProcessForDiscovery(inputArray);
 

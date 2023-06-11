@@ -101,7 +101,7 @@ public class SpawnProcess
     public static JsonNode spwanProcess(JsonArray credential) {
 
         String encoder = (Base64.getEncoder().encodeToString((credential).toString().getBytes(StandardCharsets.UTF_8)));
-
+        System.out.println(encoder);
         BufferedReader reader = null;
 
         Process process = null;
@@ -124,8 +124,9 @@ public class SpawnProcess
 
             ObjectMapper mapper = new ObjectMapper();
 
-            while ((line = reader.readLine()) != null) {
-                System.out.println("jhhjjjuiiu" + line);
+            while ((line = reader.readLine()) != null)
+            {
+                System.out.println("jhhjjjuiiu " + line);
 
                 array = mapper.readTree(line);
 
@@ -144,7 +145,7 @@ public class SpawnProcess
     {
 
         String encoder = (Base64.getEncoder().encodeToString((credential).toString().getBytes(StandardCharsets.UTF_8)));
-
+        System.out.println(encoder);
         BufferedReader reader = null;
 
         Process process = null;
@@ -159,12 +160,16 @@ public class SpawnProcess
 
             reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
-            String line;
+            String line,answer = null;
 
             while ((line = reader.readLine()) != null)
             {
-                result = new JsonObject(line);
+                answer=line;
+
+                System.out.println(line);
             }
+
+            result = new JsonObject(answer);
 
         }
         catch (Exception exception)
@@ -172,7 +177,7 @@ public class SpawnProcess
             exception.printStackTrace();
         }
 
-        System.out.println(result);
+        System.out.println("Spwan procss result "+result);
 
         return result;
     }

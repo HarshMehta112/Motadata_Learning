@@ -17,17 +17,17 @@ public class Constants {
 
     public static final String DISCOVERY_EDIT_DEVICE = "EditDiscoveryDevice";
 
-    public static final String PLUGIN_PATH = "/root/IdeaProjects/Motadata/src/main/java/Bootstrap";
+    public static final String PLUGIN_PATH = "/root/IdeaProjects/Motadata/src/main/Bootstrap";
 
     public static final String RUN_DISCOVERY = "DiscoveryRun";
 
     public static final String RUN_DISCOVERY_SPAWN_PEROCESS = "discoverySpawn";
 
-    public static final int AVAILIBILITY_POLLING_TIME = 120000;
+    public static final int AVAILIBILITY_POLLING_TIME = 1200000;
 
-    public static final int SSH_POLLING_TIME = 300000;
+    public static final int SSH_POLLING_TIME = 30000000;
 
-    public static final int SCHEDULER_DELAY = 60000;
+    public static final int SCHEDULER_DELAY = 6000;
 
     public static final String SSH_POLLING_DATA = "SSHPollingRequest";
 

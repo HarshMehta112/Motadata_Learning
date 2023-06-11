@@ -107,16 +107,16 @@ public class DatabaseVerticle extends AbstractVerticle
             {
                 System.out.println(fetchDataForAvailabilityPolling());
 
-               if(fetchDataForAvailabilityPolling().succeeded())
-               {
-                   ArrayList<String> list = fetchDataForAvailabilityPolling().result();
+                if(fetchDataForAvailabilityPolling().succeeded())
+                {
+                    ArrayList<String> list = fetchDataForAvailabilityPolling().result();
 
-                   handler.reply(list);
-               }
-               else
-               {
-                   handler.reply("Enable to fetch the Discovery Data from Database for availibaliy polling");
-               }
+                    handler.reply(list);
+                }
+                else
+                {
+                    handler.reply("Enable to fetch the Discovery Data from Database for availibaliy polling");
+                }
             });
         });
 
@@ -124,35 +124,35 @@ public class DatabaseVerticle extends AbstractVerticle
 
         eventBus.consumer(Constants.AVAILABILITY_POLLING_DATA,handler->
         {
-           fpingPollingDataDump((HashMap<String, String>) handler.body()).onComplete(result->
-           {
-               if(result.succeeded())
-               {
-                   System.out.println("availability Polling data dumped into database successfully");
-               }
-               else
-               {
-                   System.out.println("Some problem in availability polling data dumping");
+            fpingPollingDataDump((HashMap<String, String>) handler.body()).onComplete(result->
+            {
+                if(result.succeeded())
+                {
+                    System.out.println("availability Polling data dumped into database successfully");
+                }
+                else
+                {
+                    System.out.println("Some problem in availability polling data dumping");
 
-                   System.out.println(result.cause().getMessage());
-               }
-           });
+                    System.out.println(result.cause().getMessage());
+                }
+            });
         });
 
         eventBus.consumer(Constants.SSH_POLLING_DATA,handler->
         {
             sshPollingDataDump((JsonNode) handler.body()).onComplete(result->
             {
-               if(result.succeeded())
-               {
-                   System.out.println("ssh Polling data dumped into database successfully");
-               }
-               else
-               {
-                   System.out.println("Some problem in ssh polling data dumping");
+                if(result.succeeded())
+                {
+                    System.out.println("ssh Polling data dumped into database successfully");
+                }
+                else
+                {
+                    System.out.println("Some problem in ssh polling data dumping");
 
-                   System.out.println(result.cause().getMessage());
-               }
+                    System.out.println(result.cause().getMessage());
+                }
             });
         });
 
@@ -161,17 +161,17 @@ public class DatabaseVerticle extends AbstractVerticle
         {
             System.out.println(handler.body());
 
-           DeleteDevice(handler.body().toString()).onComplete(result->
-           {
-              if(DeleteDevice(handler.body().toString()).succeeded())
-              {
-                  handler.reply("Device deleted successfully");
-              }
-              else
-              {
-                  handler.reply("Enbale to delete discovery Device");
-              }
-           });
+            DeleteDevice(handler.body().toString()).onComplete(result->
+            {
+                if(DeleteDevice(handler.body().toString()).succeeded())
+                {
+                    handler.reply("Device deleted successfully");
+                }
+                else
+                {
+                    handler.reply("Enbale to delete discovery Device");
+                }
+            });
         });
 
 
@@ -188,19 +188,19 @@ public class DatabaseVerticle extends AbstractVerticle
                     {
                         String deviceId = response.result().body().toString();
 
-                       if(!deviceId.equals(""))
-                       {
-                           System.out.println(deviceId);
+                        if(!deviceId.equals(""))
+                        {
+                            System.out.println(deviceId);
 
-                           if(updateDiscovery(deviceId).succeeded())
-                           {
-                               System.out.println("Discovery Table Updated with Provision value");
-                           }
-                           else
-                           {
-                               System.out.println("Some Problem in Updating the Provision value");
-                           }
-                       }
+                            if(updateDiscovery(deviceId).succeeded())
+                            {
+                                System.out.println("Discovery Table Updated with Provision value");
+                            }
+                            else
+                            {
+                                System.out.println("Some Problem in Updating the Provision value");
+                            }
+                        }
                     }
                     else
                     {
@@ -232,7 +232,7 @@ public class DatabaseVerticle extends AbstractVerticle
 
         try
         {
-           String whereClause = "DEVICEID = "+Integer.valueOf(deviceID);
+            String whereClause = "DEVICEID = "+Integer.valueOf(deviceID);
 
             operations.delete("DISCOVERY_TABLE",whereClause);
 
@@ -388,9 +388,9 @@ public class DatabaseVerticle extends AbstractVerticle
 
             columns.add("PROVISION");
 
-           allData = operations.select("DISCOVERY_TABLE",columns);
+            allData = operations.select("DISCOVERY_TABLE",columns);
 
-           promise.complete(allData);
+            promise.complete(allData);
 
         }
         catch (Exception exception)
