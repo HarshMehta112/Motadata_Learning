@@ -63,13 +63,13 @@ public class PublicAPIVerticle extends AbstractVerticle
 
             });
 
-            router.route("/login/LoadMonitorTable").handler(routingContext ->
+            router.route("/login/LoadMonitorTable*").handler(routingContext ->
             {
                 eventBus.<JsonArray>request(Constants.LOAD_MONITOR_DEVICE,"",response->
                 {
                    if(response.succeeded())
                    {
-                       System.out.println(response.result().body());
+                       System.out.println("response from database verticle "+response.result().body());
 
                        routingContext.response().setStatusCode(200).end(response.result().body().encodePrettily());
                    }
@@ -118,7 +118,7 @@ public class PublicAPIVerticle extends AbstractVerticle
                });
             });
 
-            router.route("/login/DeleteMonitorDevice*").handler(routingContext ->
+            router.route("/login/DeleteMonitorDevice").handler(routingContext ->
             {
                 System.out.println();
 

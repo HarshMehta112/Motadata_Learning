@@ -45,6 +45,7 @@ var discoverymain = {
 
     update: function ()
     {
+        let id = $("#rawid").val();
 
         let param = $('form').serializeArray().reduce(function (finalParam, currentValue)
         {

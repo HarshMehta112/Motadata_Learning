@@ -23,7 +23,7 @@ public class Constants {
 
     public static final String RUN_DISCOVERY_SPAWN_PEROCESS = "discoverySpawn";
 
-    public static final int AVAILIBILITY_POLLING_TIME = 1200000;
+    public static final int AVAILIBILITY_POLLING_TIME = 1200;
 
     public static final int SSH_POLLING_TIME = 30000000;
 

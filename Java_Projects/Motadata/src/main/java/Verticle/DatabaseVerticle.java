@@ -93,6 +93,8 @@ public class DatabaseVerticle extends AbstractVerticle
             {
                if(loadMonitorData().succeeded())
                {
+                   System.out.println("Result "+loadMonitorData().result());
+
                    handler.reply(new JsonArray(loadMonitorData().result()));
                }
                else
@@ -471,7 +473,7 @@ public class DatabaseVerticle extends AbstractVerticle
 
         Connection connection = connectionPool.getConnection();
 
-        String query = "SELECT MONITOR_TABLE.DEVICEID, MONITOR_TABLE.IPADDRESS, MONITOR_TABLE.TYPE,MONITOR_TABLE.NAME, AVAILABILITY_TABLE.STATUS FROM MONITOR_TABLE INNER JOIN AVAILABILITY_TABLE ON MONITOR_TABLE.IPADDRESS = AVAILABILITY_TABLE.IPADDRESS ORDER BY AVAILABILITY_TABLE.TIMESTAMP DESC LIMIT 1;";
+        String query = "SELECT MONITOR_TABLE.DEVICEID, MONITOR_TABLE.IPADDRESS, MONITOR_TABLE.TYPE,MONITOR_TABLE.NAME, AVAILABILITY_TABLE.STATUS FROM MONITOR_TABLE INNER JOIN AVAILABILITY_TABLE ON MONITOR_TABLE.IPADDRESS = AVAILABILITY_TABLE.IPADDRESS ORDER BY AVAILABILITY_TABLE.TIMESTAMP DESC lIMIT (SELECT COUNT(IPADDRESS) FROM MONITOR_TABLE);";
 
         try ( PreparedStatement statement = connection.prepareStatement(query) )
         {
@@ -491,6 +493,8 @@ public class DatabaseVerticle extends AbstractVerticle
                 {
                     row.put(metaData.getColumnName(iterator), resultSet.getObject(iterator));
                 }
+
+                System.out.println("row "+row);
                 resultList.add(row);
             }
             promise.complete(resultList);
