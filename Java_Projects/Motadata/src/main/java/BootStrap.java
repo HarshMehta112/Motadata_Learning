@@ -11,6 +11,7 @@ public class BootStrap
     {
         Vertx vertx = Vertx.vertx();
 
+        //use stander declaration
         vertx.deployVerticle(new DatabaseVerticle()).onComplete(deplyment->
         {
             if(deplyment.succeeded())
@@ -47,6 +48,8 @@ public class BootStrap
                 System.out.println("Some error occurred "+deplyment.cause().getMessage());
             }
         });
+
+        // why setWorkerPoolSize
         vertx.deployVerticle(PollingEngine.class.getName(),new DeploymentOptions().setWorkerPoolSize(4)).onComplete(deplyment->
         {
             if(deplyment.succeeded())

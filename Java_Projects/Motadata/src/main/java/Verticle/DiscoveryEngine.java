@@ -13,7 +13,7 @@ public class DiscoveryEngine extends AbstractVerticle
     EventBus eventBus;
 
     @Override
-    public void start(Promise<Void> startPromise) throws Exception
+    public void start(Promise<Void> startPromise)
     {
         eventBus = vertx.eventBus();
 

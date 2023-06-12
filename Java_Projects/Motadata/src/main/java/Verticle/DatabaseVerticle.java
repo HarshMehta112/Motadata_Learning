@@ -3,7 +3,6 @@ package Verticle;
 import Utils.Constants;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.netty.handler.codec.http.FullHttpRequest;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
@@ -26,7 +25,7 @@ public class DatabaseVerticle extends AbstractVerticle
 
     static
     {
-        connectionPool = CustomConnectionPool.getInstance(4);
+        connectionPool = CustomConnectionPool.getInstance(4);  //constant
 
         connectionPool.setURL(PropertiesFile.getURL());
 
@@ -223,7 +222,7 @@ public class DatabaseVerticle extends AbstractVerticle
                 JsonObject data = result.result();
 
                 System.out.println("JSON Result of RUN PROVISION "+data);
-
+//name change
                 provisionedDeviceDataDump(data).onComplete(result1 ->
                 {
                     if(result1.succeeded())
@@ -378,13 +377,14 @@ public class DatabaseVerticle extends AbstractVerticle
 
             allData = operations.selectwithWhere("MONITOR_TABLE",columns,"");
 
-            System.out.println(allData);
+            System.out.println("Data From Monitor Table "+allData);
 
             inputDataForSSHPolling = new JsonArray();
 
-            inputDataForSSHPolling.add(allData.get(0));
-
-            System.out.println(inputDataForSSHPolling.getValue(0));
+            for(int index=0;index<allData.size();index++)
+            {
+                inputDataForSSHPolling.add(allData.get(index));
+            }
 
             JsonObject jsonObject = (JsonObject) inputDataForSSHPolling.getJsonObject(0);
 
@@ -392,7 +392,11 @@ public class DatabaseVerticle extends AbstractVerticle
 
             jsonObject.put("category","polling");
 
+            inputDataForSSHPolling.remove(0);
+
             inputDataForSSHPolling.add(0,jsonObject);
+
+            System.out.println("FInal For Exe Demp "+inputDataForSSHPolling);
 
             promise.complete(inputDataForSSHPolling);
         }
@@ -435,6 +439,7 @@ public class DatabaseVerticle extends AbstractVerticle
             String whereCluase = " WHERE DEVICEID = "+Integer.valueOf(deviceID);
 
             allData = operations.selectwithWhere("DISCOVERY_TABLE",columns,whereCluase);
+
 
             credentialData.put("username",allData.get(0).get("USERNAME"));
 
@@ -609,6 +614,8 @@ public class DatabaseVerticle extends AbstractVerticle
 
         Connection connection = connectionPool.getConnection();
 
+       // add connection.isClosed();
+
         Operations operations = new Operations(connection);
 
         try
@@ -779,6 +786,8 @@ public class DatabaseVerticle extends AbstractVerticle
 
             for (JsonNode jsonObject : jsonArray)
             {
+                System.out.println("IN FOR LOOP NOR NODE    -----------------"+jsonObject);
+
                 batchExecute(jsonObject);
             }
             promise.complete(true);
@@ -842,127 +851,130 @@ public class DatabaseVerticle extends AbstractVerticle
         {
             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO POLLING_TABLE VALUES(?,?,?,?,?)");
 
-            preparedStatement.setObject(1,data.get("id").asText());
+            if(!(data.isNull()))
+            {
+                preparedStatement.setObject(1,data.get("id").asText());
 
-            preparedStatement.setObject(2,data.get("ip").asText());
+                preparedStatement.setObject(2,data.get("ip").asText());
 
-            preparedStatement.setObject(3,"cpu.idle.percentage");
+                preparedStatement.setObject(3,"cpu.idle.percentage");
 
-            preparedStatement.setObject(4,data.get("cpu.idle.percentage").asText());
+                preparedStatement.setObject(4,data.get("cpu.idle.percentage").asText());
 
-            preparedStatement.setObject(5,data.get("timestamp").asText());
+                preparedStatement.setObject(5,data.get("timestamp").asText());
 
-            preparedStatement.addBatch();
+                preparedStatement.addBatch();
 
-            preparedStatement.setObject(1,data.get("id").asText());
+                preparedStatement.setObject(1,data.get("id").asText());
 
-            preparedStatement.setObject(2,data.get("ip").asText());
+                preparedStatement.setObject(2,data.get("ip").asText());
 
-            preparedStatement.setObject(3,"cpu.system.percentage");
+                preparedStatement.setObject(3,"cpu.system.percentage");
 
-            preparedStatement.setObject(4,data.get("cpu.system.percentage").asText());
+                preparedStatement.setObject(4,data.get("cpu.system.percentage").asText());
 
-            preparedStatement.setObject(5,data.get("timestamp").asText());
+                preparedStatement.setObject(5,data.get("timestamp").asText());
 
-            preparedStatement.addBatch();
+                preparedStatement.addBatch();
 
-            preparedStatement.setObject(1,data.get("id").asText());
+                preparedStatement.setObject(1,data.get("id").asText());
 
-            preparedStatement.setObject(2,data.get("ip").asText());
+                preparedStatement.setObject(2,data.get("ip").asText());
 
-            preparedStatement.setObject(3,"cpu.user.percentage");
+                preparedStatement.setObject(3,"cpu.user.percentage");
 
-            preparedStatement.setObject(4,data.get("cpu.user.percentage").asText());
+                preparedStatement.setObject(4,data.get("cpu.user.percentage").asText());
 
-            preparedStatement.setObject(5,data.get("timestamp").asText());
+                preparedStatement.setObject(5,data.get("timestamp").asText());
 
-            preparedStatement.addBatch();
+                preparedStatement.addBatch();
 
-            preparedStatement.setObject(1,data.get("id").asText());
+                preparedStatement.setObject(1,data.get("id").asText());
 
-            preparedStatement.setObject(2,data.get("ip").asText());
+                preparedStatement.setObject(2,data.get("ip").asText());
 
-            preparedStatement.setObject(3,"disk.used.percentage");
+                preparedStatement.setObject(3,"disk.used.percentage");
 
-            preparedStatement.setObject(4,data.get("disk.used.percentage").asText());
+                preparedStatement.setObject(4,data.get("disk.used.percentage").asText());
 
-            preparedStatement.setObject(5,data.get("timestamp").asText());
+                preparedStatement.setObject(5,data.get("timestamp").asText());
 
-            preparedStatement.addBatch();
+                preparedStatement.addBatch();
 
-            preparedStatement.setObject(1,data.get("id").asText());
+                preparedStatement.setObject(1,data.get("id").asText());
 
-            preparedStatement.setObject(2,data.get("ip").asText());
+                preparedStatement.setObject(2,data.get("ip").asText());
 
-            preparedStatement.setObject(3,"memory.free.percentage");
+                preparedStatement.setObject(3,"memory.free.percentage");
 
-            preparedStatement.setObject(4,data.get("memory.free.percentage").asText());
+                preparedStatement.setObject(4,data.get("memory.free.percentage").asText());
 
-            preparedStatement.setObject(5,data.get("timestamp").asText());
+                preparedStatement.setObject(5,data.get("timestamp").asText());
 
-            preparedStatement.addBatch();
+                preparedStatement.addBatch();
 
-            preparedStatement.setObject(1,data.get("id").asText());
+                preparedStatement.setObject(1,data.get("id").asText());
 
-            preparedStatement.setObject(2,data.get("ip").asText());
+                preparedStatement.setObject(2,data.get("ip").asText());
 
-            preparedStatement.setObject(3,"memory.used.percentage");
+                preparedStatement.setObject(3,"memory.used.percentage");
 
-            preparedStatement.setObject(4,data.get("memory.used.percentage").asText());
+                preparedStatement.setObject(4,data.get("memory.used.percentage").asText());
 
-            preparedStatement.setObject(5,data.get("timestamp").asText());
+                preparedStatement.setObject(5,data.get("timestamp").asText());
 
-            preparedStatement.addBatch();
+                preparedStatement.addBatch();
 
-            preparedStatement.setObject(1,data.get("id").asText());
+                preparedStatement.setObject(1,data.get("id").asText());
 
-            preparedStatement.setObject(2,data.get("ip").asText());
+                preparedStatement.setObject(2,data.get("ip").asText());
 
-            preparedStatement.setObject(3,"operating.system.name");
+                preparedStatement.setObject(3,"operating.system.name");
 
-            preparedStatement.setObject(4,data.get("operating.system.name").asText());
+                preparedStatement.setObject(4,data.get("operating.system.name").asText());
 
-            preparedStatement.setObject(5,data.get("timestamp").asText());
+                preparedStatement.setObject(5,data.get("timestamp").asText());
 
-            preparedStatement.addBatch();
+                preparedStatement.addBatch();
 
-            preparedStatement.setObject(1,data.get("id").asText());
+                preparedStatement.setObject(1,data.get("id").asText());
 
-            preparedStatement.setObject(2,data.get("ip").asText());
+                preparedStatement.setObject(2,data.get("ip").asText());
 
-            preparedStatement.setObject(3,"operating.system.version");
+                preparedStatement.setObject(3,"operating.system.version");
 
-            preparedStatement.setObject(4,data.get("operating.system.version").asText());
+                preparedStatement.setObject(4,data.get("operating.system.version").asText());
 
-            preparedStatement.setObject(5,data.get("timestamp").asText());
+                preparedStatement.setObject(5,data.get("timestamp").asText());
 
-            preparedStatement.addBatch();
+                preparedStatement.addBatch();
 
-            preparedStatement.setObject(1,data.get("id").asText());
+                preparedStatement.setObject(1,data.get("id").asText());
 
-            preparedStatement.setObject(2,data.get("ip").asText());
+                preparedStatement.setObject(2,data.get("ip").asText());
 
-            preparedStatement.setObject(3,"system.name");
+                preparedStatement.setObject(3,"system.name");
 
-            preparedStatement.setObject(4,data.get("system.name").asText());
+                preparedStatement.setObject(4,data.get("system.name").asText());
 
-            preparedStatement.setObject(5,data.get("timestamp").asText());
+                preparedStatement.setObject(5,data.get("timestamp").asText());
 
-            preparedStatement.addBatch();
+                preparedStatement.addBatch();
 
-            preparedStatement.setObject(1,data.get("id").asText());
+                preparedStatement.setObject(1,data.get("id").asText());
 
-            preparedStatement.setObject(2,data.get("ip").asText());
+                preparedStatement.setObject(2,data.get("ip").asText());
 
-            preparedStatement.setObject(3,"uptime");
+                preparedStatement.setObject(3,"uptime");
 
-            preparedStatement.setObject(4,data.get("uptime").asText());
+                preparedStatement.setObject(4,data.get("uptime").asText());
 
-            preparedStatement.setObject(5,data.get("timestamp").asText());
+                preparedStatement.setObject(5,data.get("timestamp").asText());
 
-            preparedStatement.addBatch();
+                preparedStatement.addBatch();
 
-            preparedStatement.executeBatch();
+                preparedStatement.executeBatch();
+            }
 
         }
         catch (Exception exception)

@@ -18,8 +18,9 @@ public class Operations
 
 
     //insert operation
-
-    public int insert (String tableName, Map< String, Object > data,String whereClause) throws SQLException
+    // remove whereclause
+    //try catch in every method
+    public int insert (String tableName, Map< String, Object > data, String whereClause) throws SQLException
     {
 
         ArrayList< String > columnNames = new ArrayList<>(data.keySet());

@@ -98,6 +98,8 @@ public class SpawnProcess
 
         return fpingResult;
     }
+
+    //spwan process generic
     public static JsonNode spwanProcess(JsonArray credential) {
 
         String encoder = (Base64.getEncoder().encodeToString((credential).toString().getBytes(StandardCharsets.UTF_8)));
@@ -105,8 +107,6 @@ public class SpawnProcess
         BufferedReader reader = null;
 
         Process process = null;
-
-        JsonObject result = null;
 
         JsonArray resultJsonarray = new JsonArray();
 
@@ -119,8 +119,6 @@ public class SpawnProcess
             reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
             String line;
-
-            String answer = null;
 
             ObjectMapper mapper = new ObjectMapper();
 
@@ -144,6 +142,7 @@ public class SpawnProcess
     public static JsonObject spwanProcessForDiscovery(JsonArray credential)
     {
 
+        //close br and all
         String encoder = (Base64.getEncoder().encodeToString((credential).toString().getBytes(StandardCharsets.UTF_8)));
         System.out.println(encoder);
         BufferedReader reader = null;

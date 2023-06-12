@@ -41,7 +41,7 @@ public class PublicAPIVerticle extends AbstractVerticle
                 context.reroute("/login/");
             });
 
-            router.route("/login/*").handler(StaticHandler.create().setCachingEnabled(false).setIndexPage("Navigation.html"));
+            router.route("/login/*").handler(StaticHandler.create().setCachingEnabled(false).setIndexPage("Dashboard.html"));
 
             router.route("/login/Add").handler(routingContext ->
             {
@@ -204,6 +204,7 @@ public class PublicAPIVerticle extends AbstractVerticle
             exception.printStackTrace();
         }
 
+        // add to try catch
         vertx.createHttpServer(new HttpServerOptions().setSsl(true).setKeyStoreOptions(new JksOptions().setPath(
                         Constants.SSL_KEYSTORE_PATH).setPassword(Constants.SSL_PASSWORD)))
                 .requestHandler(router).listen(8080).onComplete(ready ->
