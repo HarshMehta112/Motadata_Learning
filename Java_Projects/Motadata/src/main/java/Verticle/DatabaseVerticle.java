@@ -3,6 +3,7 @@ package Verticle;
 import Utils.Constants;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.netty.handler.codec.http.FullHttpRequest;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
@@ -12,6 +13,8 @@ import io.vertx.core.json.JsonObject;
 import Database.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -83,6 +86,23 @@ public class DatabaseVerticle extends AbstractVerticle
                 }
             });
         });
+
+        eventBus.consumer(Constants.LOAD_MONITOR_DEVICE,handler->
+        {
+            loadMonitorData().onComplete(result->
+            {
+               if(loadMonitorData().succeeded())
+               {
+                   handler.reply(new JsonArray(loadMonitorData().result()));
+               }
+               else
+               {
+                   handler.reply("Enable to fetch the Monitor Data from Database");
+               }
+            });
+        });
+
+
 
         eventBus.consumer(Constants.SSH_POLLING_PROCESS_TRIGGERED,handler->
         {
@@ -174,6 +194,51 @@ public class DatabaseVerticle extends AbstractVerticle
             });
         });
 
+        eventBus.consumer(Constants.MONITOR_DELETE_DEVICE,handler->
+        {
+            System.out.println("handler.body() "+handler.body());
+
+            deleteMonitorDevice(handler.body().toString()).onComplete(result->
+            {
+                if(deleteMonitorDevice(handler.body().toString()).succeeded())
+                {
+                    handler.reply("Monitor Device deleted successfully");
+                }
+                else
+                {
+                    handler.reply("Enbale to delete Monitor Device");
+                }
+            });
+        });
+
+
+        eventBus.consumer(Constants.RUN_PROVISION,handler->
+        {
+            System.out.println(handler.body());
+
+            fetchDiscoveryDatabyID(handler.body().toString()).onComplete(result->
+            {
+                JsonObject data = result.result();
+
+                System.out.println("JSON Result of RUN PROVISION "+data);
+
+                provisionedDeviceDataDump(data).onComplete(result1 ->
+                {
+                    if(result1.succeeded())
+                    {
+                        System.out.println("Discovery Device Added Succssfullly into Monitor Table");
+                    }
+                    else
+                    {
+                        System.out.println("Some error occurred in adding discovery device into Monitor Tbale");
+
+                        System.out.println(result1.cause().getMessage());
+                    }
+                });
+            });
+
+        });
+
 
         eventBus.consumer(Constants.RUN_DISCOVERY,handler->
         {
@@ -235,6 +300,36 @@ public class DatabaseVerticle extends AbstractVerticle
             String whereClause = "DEVICEID = "+Integer.valueOf(deviceID);
 
             operations.delete("DISCOVERY_TABLE",whereClause);
+
+            promise.complete(true);
+        }
+        catch (Exception exception)
+        {
+            promise.complete(false);
+
+            exception.printStackTrace();
+        }
+        finally
+        {
+            connectionPool.releaseConnection(connection);
+        }
+        return promise.future();
+
+    }
+
+    private Future<Boolean> deleteMonitorDevice(String deviceID)
+    {
+        Promise<Boolean> promise = Promise.promise();
+
+        Connection connection = connectionPool.getConnection();
+
+        Operations operations = new Operations(connection);
+
+        try
+        {
+            String whereClause = "DEVICEID = "+Integer.valueOf(deviceID);
+
+            operations.delete("MONITOR_TABLE",whereClause);
 
             promise.complete(true);
         }
@@ -331,6 +426,8 @@ public class DatabaseVerticle extends AbstractVerticle
 
             columns.add("PASSWORD");
 
+            columns.add("NAME");
+
             columns.add("TYPE");
 
             String whereCluase = " WHERE DEVICEID = "+Integer.valueOf(deviceID);
@@ -347,6 +444,8 @@ public class DatabaseVerticle extends AbstractVerticle
 
             credentialData.put("id",Integer.valueOf(deviceID));
 
+            credentialData.put("name",allData.get(0).get("NAME"));
+
             promise.complete(credentialData);
 
         }
@@ -360,6 +459,53 @@ public class DatabaseVerticle extends AbstractVerticle
         {
             connectionPool.releaseConnection(connection);
         }
+        return promise.future();
+    }
+
+
+    private Future<List<Map<String,Object>>> loadMonitorData()
+    {
+        Promise<List<Map<String,Object>>> promise = Promise.promise();
+
+        List< Map< String, Object > > resultList = null;
+
+        Connection connection = connectionPool.getConnection();
+
+        String query = "SELECT MONITOR_TABLE.DEVICEID, MONITOR_TABLE.IPADDRESS, MONITOR_TABLE.TYPE,MONITOR_TABLE.NAME, AVAILABILITY_TABLE.STATUS FROM MONITOR_TABLE INNER JOIN AVAILABILITY_TABLE ON MONITOR_TABLE.IPADDRESS = AVAILABILITY_TABLE.IPADDRESS ORDER BY AVAILABILITY_TABLE.TIMESTAMP DESC LIMIT 1;";
+
+        try ( PreparedStatement statement = connection.prepareStatement(query) )
+        {
+            ResultSet resultSet = statement.executeQuery();
+
+            resultList = new ArrayList<>();
+
+            ResultSetMetaData metaData = resultSet.getMetaData();
+
+            int columnCount = metaData.getColumnCount();
+
+            while ( resultSet.next() )
+            {
+                Map< String, Object > row = new HashMap<>();
+
+                for ( int iterator = 1; iterator <= columnCount; iterator++ )
+                {
+                    row.put(metaData.getColumnName(iterator), resultSet.getObject(iterator));
+                }
+                resultList.add(row);
+            }
+            promise.complete(resultList);
+        }
+        catch (Exception exception)
+        {
+            exception.printStackTrace();
+        }
+        finally
+        {
+            connectionPool.releaseConnection(connection);
+        }
+
+        System.out.println("Result list "+resultList);
+
         return promise.future();
     }
 
@@ -571,6 +717,48 @@ public class DatabaseVerticle extends AbstractVerticle
         }
         return promise.future();
     }
+
+    private Future<Boolean> provisionedDeviceDataDump(JsonObject credentialData)
+    {
+        Promise<Boolean> promise = Promise.promise();
+
+        Connection connection = connectionPool.getConnection();
+
+        Operations operations = new Operations(connection);
+
+        try
+        {
+            HashMap<String,Object> data = new HashMap<>();
+
+            data.put("DEVICEID",credentialData.getValue("id"));
+
+            data.put("NAME",credentialData.getValue("name"));
+
+            data.put("IPADDRESS",credentialData.getValue("ip"));
+
+            data.put("TYPE",credentialData.getValue("type"));
+
+            data.put("USERNAME",credentialData.getValue("username"));
+
+            data.put("PASSWORD",credentialData.getValue("password"));
+
+            operations.insert("MONITOR_TABLE",data,"");
+
+            promise.complete(true);
+        }
+        catch (Exception exception)
+        {
+            promise.complete(false);
+
+            exception.printStackTrace();
+        }
+        finally
+        {
+            connectionPool.releaseConnection(connection);
+        }
+        return promise.future();
+    }
+
 
 
     private Future<Boolean> sshPollingDataDump(JsonNode data)

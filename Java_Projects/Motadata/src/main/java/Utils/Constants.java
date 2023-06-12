@@ -36,4 +36,10 @@ public class Constants {
     public static final String AVAILABILITY_POLLING_PROCESS_TRIGGERED = "AvailabilityPollingProcessSpawn" ;
 
     public static final String AVAILABILITY_POLLING_DATA = "AvailabilityPollingRequest";
+
+    public static final String RUN_PROVISION = "AddDeviceToMonitorTable";
+
+    public static final String LOAD_MONITOR_DEVICE = "loadMonitorDevices";
+
+    public static final String MONITOR_DELETE_DEVICE = "deleteMonitorDevice";
 }

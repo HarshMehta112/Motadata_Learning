@@ -63,6 +63,25 @@ public class PublicAPIVerticle extends AbstractVerticle
 
             });
 
+            router.route("/login/LoadMonitorTable").handler(routingContext ->
+            {
+                eventBus.<JsonArray>request(Constants.LOAD_MONITOR_DEVICE,"",response->
+                {
+                   if(response.succeeded())
+                   {
+                       System.out.println(response.result().body());
+
+                       routingContext.response().setStatusCode(200).end(response.result().body().encodePrettily());
+                   }
+                   else
+                   {
+                       System.out.println("Some Problem in loading Monitor Devices");
+
+                       routingContext.response().end("Some Problem in loading Monitor Devices");
+                   }
+                });
+            });
+
 
             router.route("/login/Load").handler(routingContext ->
             {
@@ -84,7 +103,7 @@ public class PublicAPIVerticle extends AbstractVerticle
             });
 
 
-            router.route("/login/Delete*").handler(routingContext ->
+            router.route("/login/Delete").handler(routingContext ->
             {
                eventBus.request(Constants.DISCOVERY_DELETE_DEVICE,routingContext.request().getParam("id"),response->
                {
@@ -97,6 +116,25 @@ public class PublicAPIVerticle extends AbstractVerticle
                         routingContext.response().end("Some problem in deleting the discovery device");
                     }
                });
+            });
+
+            router.route("/login/DeleteMonitorDevice*").handler(routingContext ->
+            {
+                System.out.println();
+
+                System.out.println("Delete Monitor Id "+routingContext.request().getParam("id"));
+
+                eventBus.request(Constants.MONITOR_DELETE_DEVICE,routingContext.request().getParam("id"),response->
+                {
+                    if(response.succeeded())
+                    {
+                        routingContext.response().setStatusCode(200).end("Monitor Device Deleted");
+                    }
+                    else
+                    {
+                        routingContext.response().end("Some problem in deleting the monitor device");
+                    }
+                });
             });
 
 
@@ -113,6 +151,21 @@ public class PublicAPIVerticle extends AbstractVerticle
                         routingContext.response().end("Device not discovered");
                     }
                 });
+            });
+
+            router.route("/login/provision").handler(routingContext ->
+            {
+               eventBus.request(Constants.RUN_PROVISION,routingContext.request().getParam("id"),response->
+               {
+                  if(response.succeeded())
+                  {
+                      routingContext.response().setStatusCode(200).end("Device provisioned successfully");
+                  }
+                  else
+                  {
+                      routingContext.response().end("Some error occurred device not provisioned");
+                  }
+               });
             });
 
 

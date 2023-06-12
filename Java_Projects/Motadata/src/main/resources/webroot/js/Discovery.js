@@ -45,7 +45,6 @@ var discoverymain = {
 
     update: function ()
     {
-        let id = $("#rawid").val();
 
         let param = $('form').serializeArray().reduce(function (finalParam, currentValue)
         {
@@ -120,7 +119,35 @@ var discoverymain = {
         };
         genericAjaxCall.ajaxpost(request);
 
+    },
+
+
+    provision: function (event){
+        var a = $(event.target);
+
+        var row = a.closest("tr")
+
+        var id = row.find("td:nth-child(1)").text();
+
+        var ip = row.find("td:nth-child(3)").text();
+
+        let request = {
+
+            url: "provision",
+
+            data: {id},
+
+            success:toastr.success(ip,"provision process started successfully"),
+
+            callback: location.reload,
+
+        };
+        genericAjaxCall.ajaxpost(request);
+
     }
+
+
+
 };
 
 var discoveryhelper = {
@@ -144,14 +171,14 @@ var discoveryhelper = {
                     "<button onclick='discoverymain.discover(event)'  class='btn' style='margin-left: 5px'>Run</button>" +
                     "<button onclick='discoverycallback.editdata(event)' class='btn' style='margin-left: 5px'>Edit</button>" +
                     "<button onclick='discoverymain.deletemonitor(event)' id='DeleteBtn'  class='btn' style='margin-left: 5px'>Delete</button>" +
-                    "<button  class='btn' style='margin-left: 5px'>Provision</button>"]).draw();
+                    "<button onclick='discoverymain.provision(event)' class='btn' style='margin-left: 5px'>Provision</button>"]).draw();
             }
         });
     },
 
     validate: function (name, ip, type, username, password)
     {
-        let ipformat = /^(25[0-5]|2[0-4][0-9]|[01]?[1-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+        let ipformat = /^(25[0-5]|2[0-4][0-9]|[01]?[1-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
         if (name == "")
         {
             discoveryhelper.customalert(".failure", "Enter Valid Name");
