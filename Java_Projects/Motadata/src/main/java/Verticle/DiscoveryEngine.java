@@ -17,7 +17,7 @@ public class DiscoveryEngine extends AbstractVerticle
     {
         eventBus = vertx.eventBus();
 
-        eventBus.consumer(Constants.RUN_DISCOVERY_SPAWN_PEROCESS,handler->
+        eventBus.localConsumer(Constants.RUN_DISCOVERY_SPAWN_PEROCESS,handler->
         {
             JsonObject deviceDetails = (JsonObject) handler.body();
 

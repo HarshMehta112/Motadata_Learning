@@ -26,30 +26,32 @@ var monitormain = {
     },
 
 
-    chart: function (event)
+    chart: function ()
     {
-        $("#monitorModal").show();
 
-        var a = $(event.target);
 
-        var row = a.closest("tr")
+        // $("#monitorModal").show();
 
-        var id = row.find("td:nth-child(1)").text();
+        // var a = $(event.target);
+        //
+        // var row = a.closest("tr")
+        //
+        // var id = row.find("td:nth-child(1)").text();
+        //
+        // console.log(id)
+        //
+        // let request = {
+        //
+        //     url: "chartData",
+        //
+        //     data: {id},
+        //
+        //     success: function (data){
+        //
+        //     }
+        // };
 
-        console.log(id)
-
-        let request = {
-
-            url: "chartData",
-
-            data: {id},
-
-            success: function (data){
-
-            }
-        };
-
-        genericAjaxCall.ajaxpost(request);
+        // genericAjaxCall.ajaxpost(request);
     },
 
     deletemonitor: function (event)
@@ -84,7 +86,7 @@ var monitorhelper = {
         {
             table.row.add([value.DEVICEID,value.NAME, value.IPADDRESS, value.TYPE,value.STATUS,
                 "<button onclick='monitormain.deletemonitor(event)' class='btn' style='margin-left: 5px'>Delete</button>" +
-                "<button onclick='monitormain.chart(event)' id='monitorModal'  class='btn' style='margin-left: 5px'>View</button>"]).draw();
+                "<button onclick='monitormain.chart()' class='btn' style='margin-left: 5px'>View</button>"]).draw();
 
         });
     },
@@ -101,6 +103,48 @@ var monitorcallback = {
 
         monitorhelper.adddata(data);
     },
-
-
 }
+
+
+var xValues = ["Up", "Down"];
+var yValues = [4, 2];
+var barColors = ["blue", "orange"];
+
+var ctx1 = new Chart("myChart", {
+    type: "doughnut",
+    data: {
+        labels: xValues,
+        datasets: [{
+            backgroundColor: barColors,
+            data: yValues
+        }]
+    },
+    options: {
+        title: {
+            display: true,
+            text: "Monitor on for Last 24 Hours"
+        }
+    }
+});
+
+var xValues2 = ["10:35", "10:40", "10:45", "10:50", "10:55"];
+var yValues2 = [55, 49, 44, 24, 15];
+var barColors2 = ["red", "green", "blue", "orange", "brown"];
+
+var ctx2 = new Chart("myChart2", {
+    type: "bar",
+    data: {
+        labels: xValues2,
+        datasets: [{
+            backgroundColor: barColors2,
+            data: yValues2
+        }]
+    },
+    options: {
+        legend: { display: false },
+        title: {
+            display: true,
+            text: "Last 5 polling CPU Percentage"
+        }
+    }
+});

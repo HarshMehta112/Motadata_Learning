@@ -45,7 +45,7 @@ public class PublicAPIVerticle extends AbstractVerticle
 
             router.route("/login/Add").handler(routingContext ->
             {
-                eventBus.request(Constants.DISCOVERY_ADD_DEVICE,routingContext.body().asJsonObject(),response->
+                eventBus.request(Constants.ADD_DISCOVERY_DEVICE,routingContext.body().asJsonObject(),response->
                 {
                    if(response.succeeded())
                    {
@@ -85,7 +85,7 @@ public class PublicAPIVerticle extends AbstractVerticle
 
             router.route("/login/Load").handler(routingContext ->
             {
-                eventBus.<JsonArray>request(Constants.DISCOVERY_GET_ALL_DEVICE,"", response->
+                eventBus.<JsonArray>request(Constants.GET_ALL_DISCOVERY_DEVICE,"", response->
                 {
                     if(response.succeeded())
                     {
@@ -105,7 +105,7 @@ public class PublicAPIVerticle extends AbstractVerticle
 
             router.route("/login/Delete").handler(routingContext ->
             {
-               eventBus.request(Constants.DISCOVERY_DELETE_DEVICE,routingContext.request().getParam("id"),response->
+               eventBus.request(Constants.DELETE_DISCOVERY_DEVICE,routingContext.request().getParam("id"),response->
                {
                     if(response.succeeded())
                     {
@@ -124,7 +124,7 @@ public class PublicAPIVerticle extends AbstractVerticle
 
                 System.out.println("Delete Monitor Id "+routingContext.request().getParam("id"));
 
-                eventBus.request(Constants.MONITOR_DELETE_DEVICE,routingContext.request().getParam("id"),response->
+                eventBus.request(Constants.DELETE_MONITOR_DEVICE,routingContext.request().getParam("id"),response->
                 {
                     if(response.succeeded())
                     {
@@ -173,7 +173,7 @@ public class PublicAPIVerticle extends AbstractVerticle
             {
                 System.out.println(routingContext.body().asJsonObject());
 
-                eventBus.request(Constants.DISCOVERY_EDIT_DEVICE,routingContext.body().asJsonObject(),response->
+                eventBus.request(Constants.EDIT_DISCOVERY_DEVICE,routingContext.body().asJsonObject(),response->
                 {
                     if(response.succeeded())
                     {

@@ -124,8 +124,6 @@ public class SpawnProcess
 
             while ((line = reader.readLine()) != null)
             {
-                System.out.println("jhhjjjuiiu " + line);
-
                 array = mapper.readTree(line);
 
                 System.out.println("Hrllo I am arrY " + array);

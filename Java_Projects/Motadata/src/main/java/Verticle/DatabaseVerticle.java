@@ -42,246 +42,282 @@ public class DatabaseVerticle extends AbstractVerticle
     {
         eventBus = vertx.eventBus();
 
-        eventBus.consumer(Constants.DISCOVERY_ADD_DEVICE, handler->
+        eventBus.localConsumer(Constants.ADD_DISCOVERY_DEVICE, handler->
         {
             JsonObject deviceDetails = (JsonObject) handler.body();
 
-            if(AddDevice(deviceDetails).succeeded())
+            vertx.executeBlocking(blockingHandler->
             {
-                handler.reply("Discovery Device added in Database");
-            }
-            else
-            {
-                handler.reply("Some issue in adding Discovery Device in Database");
-            }
+                if(AddDevice(deviceDetails).succeeded())
+                {
+                    handler.reply("Discovery Device added in Database");
+                }
+                else
+                {
+                    handler.reply("Some issue in adding Discovery Device in Database");
+                }
+            });
         });
 
-        eventBus.consumer(Constants.DISCOVERY_EDIT_DEVICE, handler->
+        eventBus.localConsumer(Constants.EDIT_DISCOVERY_DEVICE, handler->
         {
             JsonObject deviceDetails = (JsonObject) handler.body();
 
-            if(EditDevice(deviceDetails).succeeded())
+            vertx.executeBlocking(blockingHandler->
             {
-                handler.reply("Discovery Device information edited in Database");
-            }
-            else
-            {
-                handler.reply("Some issue in editing Discovery Device information in Database");
-            }
-        });
-
-
-        eventBus.consumer(Constants.DISCOVERY_GET_ALL_DEVICE,handler->
-        {
-            loadData().onComplete(result->
-            {
-                if(loadData().succeeded())
+                if(EditDevice(deviceDetails).succeeded())
                 {
-                    handler.reply(new JsonArray(loadData().result()));
+                    handler.reply("Discovery Device information edited in Database");
                 }
                 else
                 {
-                    handler.reply("Enable to fetch the Discovery Data from Database");
+                    handler.reply("Some issue in editing Discovery Device information in Database");
                 }
             });
         });
 
-        eventBus.consumer(Constants.LOAD_MONITOR_DEVICE,handler->
+
+        eventBus.localConsumer(Constants.GET_ALL_DISCOVERY_DEVICE,handler->
         {
-            loadMonitorData().onComplete(result->
+            vertx.executeBlocking(blockingHandler->
             {
-               if(loadMonitorData().succeeded())
+                loadData().onComplete(result->
+                {
+                    if(loadData().succeeded())
+                    {
+                        handler.reply(new JsonArray(loadData().result()));
+                    }
+                    else
+                    {
+                        handler.reply("Enable to fetch the Discovery Data from Database");
+                    }
+                });
+            });
+        });
+
+        eventBus.localConsumer(Constants.LOAD_MONITOR_DEVICE,handler->
+        {
+            vertx.executeBlocking(blockingHandler->
+            {
+                loadMonitorData().onComplete(result->
+                {
+                    if(loadMonitorData().succeeded())
+                    {
+                        System.out.println("Result "+loadMonitorData().result());
+
+                        handler.reply(new JsonArray(loadMonitorData().result()));
+                    }
+                    else
+                    {
+                        handler.reply("Enable to fetch the Monitor Data from Database");
+                    }
+                });
+            });
+        });
+
+
+
+        eventBus.localConsumer(Constants.SSH_POLLING_PROCESS_TRIGGERED,handler->
+        {
+           vertx.executeBlocking(blockingHandler->
+           {
+               fetchMonitorData().onComplete(result->
                {
-                   System.out.println("Result "+loadMonitorData().result());
+                   if(fetchMonitorData().succeeded())
+                   {
+                       JsonArray fetchDataFromMonitorTable = fetchMonitorData().result();
 
-                   handler.reply(new JsonArray(loadMonitorData().result()));
-               }
-               else
-               {
-                   handler.reply("Enable to fetch the Monitor Data from Database");
-               }
-            });
+                       handler.reply(fetchDataFromMonitorTable);
+                   }
+                   else
+                   {
+                       handler.reply("Enable to fetch the Discovery Data from Database for ssh polling");
+                   }
+               });
+           });
         });
 
-
-
-        eventBus.consumer(Constants.SSH_POLLING_PROCESS_TRIGGERED,handler->
+        eventBus.localConsumer(Constants.AVAILABILITY_POLLING_PROCESS_TRIGGERED,handler->
         {
-            fetchMonitorData().onComplete(result->
+            vertx.executeBlocking(blockingHandler->
             {
-                if(fetchMonitorData().succeeded())
+                fetchDataForAvailabilityPolling().onComplete(arrayListAsyncResult ->
                 {
-                    JsonArray fetchDataFromMonitorTable = fetchMonitorData().result();
+                    System.out.println(fetchDataForAvailabilityPolling());
 
-                    handler.reply(fetchDataFromMonitorTable);
-                }
-                else
-                {
-                    handler.reply("Enable to fetch the Discovery Data from Database for ssh polling");
-                }
+                    if(fetchDataForAvailabilityPolling().succeeded())
+                    {
+                        ArrayList<String> list = fetchDataForAvailabilityPolling().result();
+
+                        handler.reply(list);
+                    }
+                    else
+                    {
+                        handler.reply("Enable to fetch the Discovery Data from Database for availibaliy polling");
+                    }
+                });
             });
         });
 
-        eventBus.consumer(Constants.AVAILABILITY_POLLING_PROCESS_TRIGGERED,handler->
+
+
+        eventBus.localConsumer(Constants.AVAILABILITY_POLLING_DATA,handler->
         {
-            fetchDataForAvailabilityPolling().onComplete(arrayListAsyncResult ->
+            vertx.executeBlocking(blockingHandle->
             {
-                System.out.println(fetchDataForAvailabilityPolling());
-
-                if(fetchDataForAvailabilityPolling().succeeded())
+                fpingPollingDataDump((HashMap<String, String>) handler.body()).onComplete(result->
                 {
-                    ArrayList<String> list = fetchDataForAvailabilityPolling().result();
+                    if(result.succeeded())
+                    {
+                        System.out.println("availability Polling data dumped into database successfully");
+                    }
+                    else
+                    {
+                        System.out.println("Some problem in availability polling data dumping");
 
-                    handler.reply(list);
-                }
-                else
-                {
-                    handler.reply("Enable to fetch the Discovery Data from Database for availibaliy polling");
-                }
+                        System.out.println(result.cause().getMessage());
+                    }
+                });
             });
         });
 
-
-
-        eventBus.consumer(Constants.AVAILABILITY_POLLING_DATA,handler->
+        eventBus.localConsumer(Constants.SSH_POLLING_DATA,handler->
         {
-            fpingPollingDataDump((HashMap<String, String>) handler.body()).onComplete(result->
+            vertx.executeBlocking(blockingHandler->
             {
-                if(result.succeeded())
+                sshPollingDataDump((JsonNode) handler.body()).onComplete(result->
                 {
-                    System.out.println("availability Polling data dumped into database successfully");
-                }
-                else
-                {
-                    System.out.println("Some problem in availability polling data dumping");
+                    if(result.succeeded())
+                    {
+                        System.out.println("ssh Polling data dumped into database successfully");
+                    }
+                    else
+                    {
+                        System.out.println("Some problem in ssh polling data dumping");
 
-                    System.out.println(result.cause().getMessage());
-                }
-            });
-        });
-
-        eventBus.consumer(Constants.SSH_POLLING_DATA,handler->
-        {
-            sshPollingDataDump((JsonNode) handler.body()).onComplete(result->
-            {
-                if(result.succeeded())
-                {
-                    System.out.println("ssh Polling data dumped into database successfully");
-                }
-                else
-                {
-                    System.out.println("Some problem in ssh polling data dumping");
-
-                    System.out.println(result.cause().getMessage());
-                }
+                        System.out.println(result.cause().getMessage());
+                    }
+                });
             });
         });
 
 
-        eventBus.consumer(Constants.DISCOVERY_DELETE_DEVICE,handler->
+        eventBus.localConsumer(Constants.DELETE_DISCOVERY_DEVICE,handler->
         {
             System.out.println(handler.body());
 
-            DeleteDevice(handler.body().toString()).onComplete(result->
+            vertx.executeBlocking(blockingHandler->
             {
-                if(DeleteDevice(handler.body().toString()).succeeded())
+                DeleteDevice(handler.body().toString()).onComplete(result->
                 {
-                    handler.reply("Device deleted successfully");
-                }
-                else
-                {
-                    handler.reply("Enbale to delete discovery Device");
-                }
+                    if(DeleteDevice(handler.body().toString()).succeeded())
+                    {
+                        handler.reply("Device deleted successfully");
+                    }
+                    else
+                    {
+                        handler.reply("Enbale to delete discovery Device");
+                    }
+                });
             });
         });
 
-        eventBus.consumer(Constants.MONITOR_DELETE_DEVICE,handler->
+        eventBus.localConsumer(Constants.DELETE_MONITOR_DEVICE,handler->
         {
             System.out.println("handler.body() "+handler.body());
 
-            deleteMonitorDevice(handler.body().toString()).onComplete(result->
-            {
-                if(deleteMonitorDevice(handler.body().toString()).succeeded())
-                {
-                    handler.reply("Monitor Device deleted successfully");
-                }
-                else
-                {
-                    handler.reply("Enbale to delete Monitor Device");
-                }
-            });
+           vertx.executeBlocking(blockingHandler->
+           {
+               deleteMonitorDevice(handler.body().toString()).onComplete(result->
+               {
+                   if(deleteMonitorDevice(handler.body().toString()).succeeded())
+                   {
+                       handler.reply("Monitor Device deleted successfully");
+                   }
+                   else
+                   {
+                       handler.reply("Enbale to delete Monitor Device");
+                   }
+               });
+           });
         });
 
 
-        eventBus.consumer(Constants.RUN_PROVISION,handler->
+        eventBus.localConsumer(Constants.RUN_PROVISION,handler->
         {
             System.out.println(handler.body());
 
-            fetchDiscoveryDatabyID(handler.body().toString()).onComplete(result->
+            vertx.executeBlocking(blockingHandler->
             {
-                JsonObject data = result.result();
-
-                System.out.println("JSON Result of RUN PROVISION "+data);
-//name change
-                provisionedDeviceDataDump(data).onComplete(result1 ->
+                fetchDiscoveryDatabyID(handler.body().toString()).onComplete(result->
                 {
-                    if(result1.succeeded())
-                    {
-                        System.out.println("Discovery Device Added Succssfullly into Monitor Table");
-                    }
-                    else
-                    {
-                        System.out.println("Some error occurred in adding discovery device into Monitor Tbale");
+                    JsonObject data = result.result();
 
-                        System.out.println(result1.cause().getMessage());
-                    }
+                    System.out.println("JSON Result of RUN PROVISION "+data);
+
+                    provisionedDeviceDataDump(data).onComplete(result1 ->
+                    {
+                        if(result1.succeeded())
+                        {
+                            System.out.println("Discovery Device Added Succssfullly into Monitor Table");
+                        }
+                        else
+                        {
+                            System.out.println("Some error occurred in adding discovery device into Monitor Tbale");
+
+                            System.out.println(result1.cause().getMessage());
+                        }
+                    });
                 });
             });
 
         });
 
 
-        eventBus.consumer(Constants.RUN_DISCOVERY,handler->
+        eventBus.localConsumer(Constants.RUN_DISCOVERY,handler->
         {
             System.out.println(handler.body());
 
-            fetchDiscoveryDatabyID(handler.body().toString()).onComplete(result->
+            vertx.executeBlocking(blockingHandler->
             {
-
-                eventBus.request(Constants.RUN_DISCOVERY_SPAWN_PEROCESS,fetchDiscoveryDatabyID(handler.body().toString()).result(),response->
+                fetchDiscoveryDatabyID(handler.body().toString()).onComplete(result->
                 {
-                    if(response.succeeded())
+
+                    eventBus.request(Constants.RUN_DISCOVERY_SPAWN_PEROCESS,fetchDiscoveryDatabyID(handler.body().toString()).result(),response->
                     {
-                        String deviceId = response.result().body().toString();
-
-                        if(!deviceId.equals(""))
+                        if(response.succeeded())
                         {
-                            System.out.println(deviceId);
+                            String deviceId = response.result().body().toString();
 
-                            if(updateDiscovery(deviceId).succeeded())
+                            if(!deviceId.equals(""))
                             {
-                                System.out.println("Discovery Table Updated with Provision value");
-                            }
-                            else
-                            {
-                                System.out.println("Some Problem in Updating the Provision value");
+                                System.out.println(deviceId);
+
+                                if(updateDiscovery(deviceId).succeeded())
+                                {
+                                    System.out.println("Discovery Table Updated with Provision value");
+                                }
+                                else
+                                {
+                                    System.out.println("Some Problem in Updating the Provision value");
+                                }
                             }
                         }
+                        else
+                        {
+                            System.out.println("Some error in getting the output from .exe file");
+                        }
+                    });
+
+                    if(fetchDiscoveryDatabyID(handler.body().toString()).succeeded())
+                    {
+                        handler.reply("Device discovered successfully");
                     }
                     else
                     {
-                        System.out.println("Some error in getting the output from .exe file");
+                        handler.reply("Device not discovered");
                     }
                 });
-
-                if(fetchDiscoveryDatabyID(handler.body().toString()).succeeded())
-                {
-                    handler.reply("Device discovered successfully");
-                }
-                else
-                {
-                    handler.reply("Device not discovered");
-                }
             });
         });
 

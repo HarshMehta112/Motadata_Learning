@@ -208,7 +208,7 @@ var discoveryhelper = {
     {
         if ($("#updatetype").val() == "ssh")
         {
-            $("#updatesshdivision").show();
+            $("#").show();updatesshdivision
 
         } else if ($("#type").val() == "ssh")
         {
