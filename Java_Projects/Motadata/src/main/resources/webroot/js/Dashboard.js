@@ -6,9 +6,10 @@ $(function() {
 
         eventBus.registerHandler('updates.data', function (err, msg) {
 
-            console.log(JSON.stringify(msg));
+            console.log(JSON.parse(msg))
 
-            // updateDatatable(JSON.stringify(msg));
+            dashboardmain.updateData(msg)
+
 
         });
     }
@@ -24,4 +25,14 @@ var dashboardmain = {
         };
         genericAjaxCall.ajaxpost(request);
     },
+
+    updateData : function (data)
+    {
+        var UpdatedData = JSON.parse(data);
+
+        var x = document.getElementById('status')
+
+        console.log(x)
+    }
+
 };

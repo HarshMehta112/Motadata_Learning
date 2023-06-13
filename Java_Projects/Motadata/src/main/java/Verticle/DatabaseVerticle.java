@@ -345,18 +345,26 @@ public class DatabaseVerticle extends AbstractVerticle
             },false);
         });
 
-        vertx.setPeriodic(20000,handler->
+        vertx.setPeriodic(5000,handler->
         {
-            eventBus.publish("updates.data",dashBoardDataLoad().result());
+            Promise<HashMap<String,List<Map<String,Object>>>> promise = Promise.promise();
+
+            dashBoardDataLoad(promise);
+
+            promise.future().onComplete(handlers->
+            {
+                eventBus.publish("updates.data",handlers.result());
+
+            });
         });
 
     }
 
 
 
-    private Future<HashMap<String,List<Map<String,Object>>>> dashBoardDataLoad()
+    private void dashBoardDataLoad(Promise<HashMap<String, List<Map<String, Object>>>> promise)
     {
-        Promise<HashMap<String,List<Map<String,Object>>>> promise = Promise.promise();
+//        Promise<HashMap<String,List<Map<String,Object>>>> promise = Promise.promise();
 
         HashMap<String,List<Map<String,Object>>> dashBoardData = new HashMap<>();
 
@@ -368,26 +376,22 @@ public class DatabaseVerticle extends AbstractVerticle
 
             try
             {
-                String query = "SELECT m.ipaddress, MAX(p.METRICVALUE) AS memory FROM POLLING_TABLE p, MONITOR_TABLE m WHERE p.metricType = 'disk.used.percentage' AND p.timestamp >= NOW() - INTERVAL '5' MINUTE AND p.IPADDRESS = m.IPADDRESS GROUP BY p.ipaddress ORDER BY memory DESC LIMIT 5;";
+                String query = "SELECT m.ipaddress, MAX(p.METRICVALUE) AS memory FROM POLLING_TABLE p, MONITOR_TABLE m WHERE p.metricType = 'disk.used.percentage' AND p.timestamp >= NOW() - INTERVAL '1000' MINUTE AND p.IPADDRESS = m.IPADDRESS GROUP BY p.ipaddress ORDER BY memory DESC LIMIT 5;";
 
                 List<Map<String,Object>> map = operations.selectQuery(query);
 
-                System.out.println(map);
-
                 dashBoardData.put("memory",map);
-
-                System.out.println("DashBorad Data "+ dashBoardData );
 
                 map = null;
 
-                map = operations.selectQuery("SELECT m.ipaddress, MAX(p.METRICVALUE) AS disk FROM POLLING_TABLE p, MONITOR_TABLE m WHERE p.metricType = 'disk.used.percentage' AND p.timestamp >= NOW() - INTERVAL '5' MINUTE AND p.IPADDRESS = m.IPADDRESS GROUP BY p.ipaddress ORDER BY disk DESC LIMIT 5;");
+                map = operations.selectQuery("SELECT m.ipaddress, MAX(p.METRICVALUE) AS disk FROM POLLING_TABLE p, MONITOR_TABLE m WHERE p.metricType = 'disk.used.percentage' AND p.timestamp >= NOW() - INTERVAL '1000' MINUTE AND p.IPADDRESS = m.IPADDRESS GROUP BY p.ipaddress ORDER BY disk DESC LIMIT 5;");
 
 
                 dashBoardData.put("disk",map);
 
                 map = null;
 
-                map = operations.selectQuery("SELECT m.ipaddress, MAX(p.METRICVALUE) AS cpu FROM POLLING_TABLE p, MONITOR_TABLE m WHERE p.metricType = 'cpu.idle.percentage' AND p.timestamp >= NOW() - INTERVAL '5' MINUTE AND p.IPADDRESS = m.IPADDRESS GROUP BY p.ipaddress ORDER BY cpu DESC LIMIT 5;");
+                map = operations.selectQuery("SELECT m.ipaddress, MAX(p.METRICVALUE) AS cpu FROM POLLING_TABLE p, MONITOR_TABLE m WHERE p.metricType = 'cpu.idle.percentage' AND p.timestamp >= NOW() - INTERVAL '1000' MINUTE AND p.IPADDRESS = m.IPADDRESS GROUP BY p.ipaddress ORDER BY cpu DESC LIMIT 5;");
 
                 dashBoardData.put("cpu",map);
 
@@ -397,10 +401,11 @@ public class DatabaseVerticle extends AbstractVerticle
 
                 dashBoardData.put("status",map);
 
-
-
                 System.out.println("DashBorad Data 3"+ dashBoardData );
 
+                System.out.println("Hello "+dashBoardData);
+
+                promise.complete(dashBoardData);
             }
             catch (Exception exception)
             {
@@ -414,10 +419,6 @@ public class DatabaseVerticle extends AbstractVerticle
             }
         });
 
-        promise.complete(dashBoardData);
-
-        System.out.println(dashBoardData);
-        return promise.future();
     }
 
 

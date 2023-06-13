@@ -77,8 +77,6 @@ public class PollingEngine extends AbstractVerticle
                                 else
                                 {
                                     System.out.println("Some Problem in loading Discovery Devices");
-                                    System.out.println("Some Problem in loading Discovery Devices");
-
                                 }
                             });
                         }
