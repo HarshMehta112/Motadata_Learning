@@ -13,6 +13,8 @@ var genericAjaxCall={
             {
                 let callbacks;
 
+                // getData(data);
+
                 if(request.callback!==undefined)
                 {
                     callbacks = $.Callbacks();

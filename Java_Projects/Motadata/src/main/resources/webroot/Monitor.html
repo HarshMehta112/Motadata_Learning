@@ -5,6 +5,8 @@
     <title>Title</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
   <link rel="stylesheet" href="css/Monitor.css">
+  <link rel="stylesheet" href="css/Dashboard.css">
+  <link rel="stylesheet" href="css/Responsive.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
@@ -18,8 +20,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
   <script src="js/GenericAjaxCall.js"></script>
   <script src="js/Monitor.js"></script>
+  <script src="js/Device.js"></script>
 </head>
-<body>
+<body id="monitorbody">
 
 <div class="monitorTitle">
   <h1 style="color: black">MONITORS</h1>
@@ -41,43 +44,6 @@
 </table>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="monitorModal" tabindex="-1" aria-labelledby="monitorModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="monitorModalLabel">Live Data</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div class="wrapper">
-          <div id="item1">
-            <canvas id="myChart" style="width:300%;max-width:500px;height: 300%;max-height:600px;"></canvas>
-          </div>
-          <div id="CPU">
-            <h4>CPU Percentage: 0%</h4>
-          </div>
-          <div id="Disk">
-            <h4>Disk Percentage : 20</h4>
-          </div>
-          <div id="Memory">
-            <h4>Memory : 4</h4>
-          </div>
-          <div id="Uptime">
-            <h4>Uptime : 4</h4>
-          </div>
-        </div>
-        <div id="item2">
-          <canvas id="myChart2" style="width:100%;max-width:600px"></canvas>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
-
-</script>
 
 
 

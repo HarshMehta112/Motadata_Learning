@@ -1,4 +1,9 @@
 package Verticle;
 
-public class SockJSVerticle {
+import io.vertx.core.AbstractVerticle;
+
+public class SockJSVerticle extends AbstractVerticle
+{
+
+
 }

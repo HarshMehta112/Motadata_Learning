@@ -5,10 +5,14 @@ import io.vertx.core.Promise;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.JksOptions;
 import io.vertx.ext.auth.properties.PropertyFileAuthentication;
+import io.vertx.ext.bridge.PermittedOptions;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.*;
+import io.vertx.ext.web.handler.sockjs.SockJSBridgeOptions;
+import io.vertx.ext.web.handler.sockjs.SockJSHandler;
 import io.vertx.ext.web.sstore.LocalSessionStore;
 import Utils.Constants;
 
@@ -169,6 +173,25 @@ public class PublicAPIVerticle extends AbstractVerticle
             });
 
 
+            router.route("/login/deviceInfo").handler(routingContext ->
+            {
+                eventBus.<JsonObject>request(Constants.MONITOR_DEVICE_INFO,routingContext.request().getParam("deviceId"), response->
+                {
+                    if(response.succeeded())
+                    {
+                        System.out.println("Response "+response.result().body().encodePrettily());
+
+                        routingContext.response().end(response.result().body().toString());
+                    }
+                    else
+                    {
+                        routingContext.response().end("Some error occurred on loadinf device information");
+                    }
+                });
+            });
+
+
+
             router.route("/login/Edit").handler(routingContext ->
             {
                 System.out.println(routingContext.body().asJsonObject());
@@ -191,8 +214,16 @@ public class PublicAPIVerticle extends AbstractVerticle
             });
 
 
+            SockJSHandler jsHandler = SockJSHandler.create(vertx);
 
-            router.route("/logout").handler(context -> {
+            SockJSBridgeOptions bridgeOptions = new SockJSBridgeOptions()
+                    .addInboundPermitted(new PermittedOptions().setAddressRegex("updates.*"))
+                    .addOutboundPermitted(new PermittedOptions().setAddressRegex("updates.*"));
+
+            router.mountSubRouter("/login/eventbus",jsHandler.bridge(bridgeOptions));
+
+
+            router.route("/login/logout").handler(context -> {
 
                 context.clearUser();
 
@@ -204,22 +235,28 @@ public class PublicAPIVerticle extends AbstractVerticle
             exception.printStackTrace();
         }
 
-        // add to try catch
-        vertx.createHttpServer(new HttpServerOptions().setSsl(true).setKeyStoreOptions(new JksOptions().setPath(
-                        Constants.SSL_KEYSTORE_PATH).setPassword(Constants.SSL_PASSWORD)))
-                .requestHandler(router).listen(8080).onComplete(ready ->
-        {
-            if(ready.succeeded())
-            {
-                System.out.println("server started listening on port no 8080");
+       try
+       {
+           vertx.createHttpServer(new HttpServerOptions().setSsl(true).setKeyStoreOptions(new JksOptions().setPath(
+                           Constants.SSL_KEYSTORE_PATH).setPassword(Constants.SSL_PASSWORD)))
+                   .requestHandler(router).listen(8080).onComplete(ready ->
+                   {
+                       if(ready.succeeded())
+                       {
+                           System.out.println("server started listening on port no 8080");
 
-                startPromise.complete();
-            }
-            else
-            {
-                startPromise.fail("some error occurred with server" + ready.cause().getMessage());
-            }
-        });
+                           startPromise.complete();
+                       }
+                       else
+                       {
+                           startPromise.fail("some error occurred with server" + ready.cause().getMessage());
+                       }
+                   });
+       }
+       catch (Exception exception)
+       {
+           exception.printStackTrace();
+       }
 
     }
 }

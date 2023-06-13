@@ -1,5 +1,6 @@
 package Database;
 
+import java.beans.PropertyEditorSupport;
 import java.sql.*;
 import java.util.*;
 
@@ -20,7 +21,7 @@ public class Operations
     //insert operation
     // remove whereclause
     //try catch in every method
-    public int insert (String tableName, Map< String, Object > data, String whereClause) throws SQLException
+    public int insert (String tableName, Map< String, Object > data, String whereClause)
     {
 
         ArrayList< String > columnNames = new ArrayList<>(data.keySet());
@@ -43,11 +44,16 @@ public class Operations
             return statement.executeUpdate();
 
         }
+        catch (Exception exception)
+        {
+            exception.printStackTrace();
+        }
+        return 0;
     }
 
 
     // Update operation
-    public int update (String tableName, Map< String, Object > data, String whereClause) throws SQLException
+    public int update (String tableName, Map< String, Object > data, String whereClause)
     {
 
         ArrayList< String > columnNames = new ArrayList<>(data.keySet());
@@ -77,11 +83,16 @@ public class Operations
 
             return statement.executeUpdate();
         }
+        catch (Exception exception)
+        {
+            exception.printStackTrace();
+        }
+        return 0;
     }
 
 
     // Delete operation
-    public int delete (String tableName, String whereClause) throws SQLException
+    public int delete (String tableName, String whereClause)
     {
 
         String query = "DELETE FROM " + tableName + " WHERE " + whereClause;
@@ -90,41 +101,15 @@ public class Operations
         {
             return statement.executeUpdate();
         }
+        catch (Exception exception)
+        {
+            exception.printStackTrace();
+        }
+        return 0;
     }
 
     // Select operation
-    public List< Map< String, Object > > select (String tableName, ArrayList< String > columnNames) throws SQLException
-    {
-
-        String columns = String.join(",", columnNames);
-
-        String query = "SELECT " + columns + " FROM " + tableName;
-
-        try ( PreparedStatement statement = connection.prepareStatement(query) )
-        {
-            ResultSet resultSet = statement.executeQuery();
-
-            List< Map< String, Object > > resultList = new ArrayList<>();
-
-            ResultSetMetaData metaData = resultSet.getMetaData();
-
-            int columnCount = metaData.getColumnCount();
-
-            while ( resultSet.next() )
-            {
-                Map< String, Object > row = new HashMap<>();
-
-                for ( int iterator = 1; iterator <= columnCount; iterator++ )
-                {
-                    row.put(metaData.getColumnName(iterator), resultSet.getObject(iterator));
-                }
-                resultList.add(row);
-            }
-            return resultList;
-        }
-    }
-
-    public List< Map< String, Object > > selectwithWhere (String tableName, ArrayList< String > columnNames,String whereClause) throws SQLException
+    public List< Map< String, Object > > selectwithWhere (String tableName, ArrayList< String > columnNames,String whereClause)
     {
 
         String columns = String.join(",", columnNames);
@@ -153,5 +138,44 @@ public class Operations
             }
             return resultList;
         }
+        catch (Exception exception)
+        {
+            exception.printStackTrace();
+        }
+        return null;
     }
+
+    public List< Map< String, Object > > selectQuery (String query) throws SQLException
+    {
+
+        try ( PreparedStatement statement = connection.prepareStatement(query) )
+        {
+            ResultSet resultSet = statement.executeQuery();
+
+            List< Map< String, Object > > resultList = new ArrayList<>();
+
+            ResultSetMetaData metaData = resultSet.getMetaData();
+
+            int columnCount = metaData.getColumnCount();
+
+            while ( resultSet.next() )
+            {
+                Map< String, Object > row = new HashMap<>();
+
+                for ( int iterator = 1; iterator <= columnCount; iterator++ )
+                {
+                    row.put(metaData.getColumnName(iterator), resultSet.getObject(iterator));
+                }
+                resultList.add(row);
+            }
+            return resultList;
+        }
+        catch (Exception exception)
+        {
+            exception.printStackTrace();
+        }
+        return null;
+    }
+
+
 }

@@ -9,9 +9,19 @@
         content="width=device-width,
 				initial-scale=1.0">
   <title>GeeksForGeeks</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+  <script src="//cdn.jsdelivr.net/sockjs/1.0.0/sockjs.min.js"></script>
+  <script src="https://unpkg.io/@vertx/eventbus-bridge-client.js@1.0.0-1/vertx-eventbus.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
   <link rel="stylesheet" href="css/Dashboard.css">
   <link rel="stylesheet"
         href="css/Responsive.css">
+  <script src="js/Dashboard.js"></script>
+  <script src="js/GenericAjaxCall.js"></script>
 </head>
 
 <body>
@@ -56,9 +66,10 @@
         </div>
 
         <div class="nav-option logout">
-          <img src="https://media.geeksforgeeks.org/wp-content/uploads/20221210183321/7.png"
-               class="nav-img"
-               alt="logout">
+
+          <button onclick="dashboardmain.logout()"> <img src="https://media.geeksforgeeks.org/wp-content/uploads/20221210183321/7.png"
+                                                         class="nav-img"
+                                                         alt="logout">d</button>
           <h3>Logout</h3>
         </div>
 
@@ -70,30 +81,25 @@
 
       <div class="box box1">
         <div class="text">
-          <h2 class="topic-heading">60.5k</h2>
+          <h2 class="topic-heading">--</h2>
           <h3 class="topic">Up</h3>
         </div>
       </div>
 
       <div class="box box2">
         <div class="text">
-          <h2 class="topic-heading">150</h2>
+          <h2 class="topic-heading">--</h2>
           <h3 class="topic">Down</h3>
         </div>
       </div>
 
       <div class="box box3">
         <div class="text">
-          <h2 class="topic-heading">320</h2>
-          <h3 class="topic">Unknown</h3>
+          <h2 class="topic-heading">--</h2>
+          <h3 class="topic">Total</h3>
         </div>
       </div>
 
-      <div class="box box4">
-        <div class="text">
-          <h2 class="topic-heading">70</h2>
-          <h3 class="topic">Total Devices</h3>
-        </div>
     </div>
 
       <div class="row">
@@ -125,6 +131,7 @@
         </table>
       </div>
 
+
         <div class="container">
           <h2>Top 5 max CPU(%)</h2>
           <table>
@@ -180,6 +187,7 @@
           </tr>
           </table>
         </div>
+      </div>
 
     </div>
   </div>

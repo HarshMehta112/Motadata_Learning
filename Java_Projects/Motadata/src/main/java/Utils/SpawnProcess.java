@@ -3,7 +3,6 @@ package Utils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 public class SpawnProcess
 {
@@ -66,17 +66,21 @@ public class SpawnProcess
             {
                 if (!((line = reader.readLine()) != null))
                     break;
-            }
-            catch (IOException exception)
-            {
-                exception.printStackTrace();
-            }
 
-            try
-            {
                 packetLoss = Integer.parseInt(((line.split(":"))[1]).split("=")[1].split(",")[0].split("/")[2].split("%")[0]);
 
                 avgLatency = Integer.parseInt(((line.split(":"))[1]).split("=")[2].split("/")[2]);
+
+                if(avgLatency==0 && packetLoss>50)
+                {
+                    fpingResult.put(((line.split(":"))[0]).trim(),"Down");
+                }
+                else
+                {
+                    fpingResult.put(((line.split(":"))[0]).trim(),"Up");
+                }
+
+                process.waitFor(60,TimeUnit.SECONDS);
 
             }
             catch (Exception exception)
@@ -84,17 +88,10 @@ public class SpawnProcess
                 avgLatency=0;
             }
 
-            if(avgLatency==0 && packetLoss>50)
-            {
-                fpingResult.put(((line.split(":"))[0]).trim(),"Down");
-            }
-            else
-            {
-                fpingResult.put(((line.split(":"))[0]).trim(),"Up");
-            }
         }
 
         System.out.println("Result in spwan process "+fpingResult);
+
 
         return fpingResult;
     }
@@ -125,48 +122,11 @@ public class SpawnProcess
             while ((line = reader.readLine()) != null)
             {
                 array = mapper.readTree(line);
-
-                System.out.println("Hrllo I am arrY " + array);
             }
+
+            process.waitFor(60,TimeUnit.SECONDS);
 
             System.out.println(resultJsonarray);
-
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }
-
-        return array;
-    }
-    public static JsonObject spwanProcessForDiscovery(JsonArray credential)
-    {
-
-        //close br and all
-        String encoder = (Base64.getEncoder().encodeToString((credential).toString().getBytes(StandardCharsets.UTF_8)));
-        System.out.println(encoder);
-        BufferedReader reader = null;
-
-        Process process = null;
-
-        JsonObject result = null;
-
-        try
-        {
-            ProcessBuilder builder = new ProcessBuilder(Constants.PLUGIN_PATH,encoder);
-
-            process= builder.start();
-
-            reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-
-            String line,answer = null;
-
-            while ((line = reader.readLine()) != null)
-            {
-                answer=line;
-
-                System.out.println(line);
-            }
-
-            result = new JsonObject(answer);
 
         }
         catch (Exception exception)
@@ -174,8 +134,7 @@ public class SpawnProcess
             exception.printStackTrace();
         }
 
-        System.out.println("Spwan procss result "+result);
-
-        return result;
+        return array;
     }
+
 }

@@ -25,7 +25,7 @@ public class DatabaseVerticle extends AbstractVerticle
 
     static
     {
-        connectionPool = CustomConnectionPool.getInstance(4);  //constant
+        connectionPool = CustomConnectionPool.getInstance(8);  //constant
 
         connectionPool.setURL(PropertiesFile.getURL());
 
@@ -40,6 +40,8 @@ public class DatabaseVerticle extends AbstractVerticle
     @Override
     public void start(Promise<Void> startPromise) throws Exception
     {
+
+
         eventBus = vertx.eventBus();
 
         eventBus.localConsumer(Constants.ADD_DISCOVERY_DEVICE, handler->
@@ -56,7 +58,7 @@ public class DatabaseVerticle extends AbstractVerticle
                 {
                     handler.reply("Some issue in adding Discovery Device in Database");
                 }
-            });
+            },false);
         });
 
         eventBus.localConsumer(Constants.EDIT_DISCOVERY_DEVICE, handler->
@@ -73,7 +75,7 @@ public class DatabaseVerticle extends AbstractVerticle
                 {
                     handler.reply("Some issue in editing Discovery Device information in Database");
                 }
-            });
+            },false);
         });
 
 
@@ -92,7 +94,7 @@ public class DatabaseVerticle extends AbstractVerticle
                         handler.reply("Enable to fetch the Discovery Data from Database");
                     }
                 });
-            });
+            },false);
         });
 
         eventBus.localConsumer(Constants.LOAD_MONITOR_DEVICE,handler->
@@ -112,7 +114,7 @@ public class DatabaseVerticle extends AbstractVerticle
                         handler.reply("Enable to fetch the Monitor Data from Database");
                     }
                 });
-            });
+            },false);
         });
 
 
@@ -134,7 +136,7 @@ public class DatabaseVerticle extends AbstractVerticle
                        handler.reply("Enable to fetch the Discovery Data from Database for ssh polling");
                    }
                });
-           });
+           },false);
         });
 
         eventBus.localConsumer(Constants.AVAILABILITY_POLLING_PROCESS_TRIGGERED,handler->
@@ -156,7 +158,7 @@ public class DatabaseVerticle extends AbstractVerticle
                         handler.reply("Enable to fetch the Discovery Data from Database for availibaliy polling");
                     }
                 });
-            });
+            },false);
         });
 
 
@@ -178,8 +180,9 @@ public class DatabaseVerticle extends AbstractVerticle
                         System.out.println(result.cause().getMessage());
                     }
                 });
-            });
+            },false);
         });
+
 
         eventBus.localConsumer(Constants.SSH_POLLING_DATA,handler->
         {
@@ -198,7 +201,7 @@ public class DatabaseVerticle extends AbstractVerticle
                         System.out.println(result.cause().getMessage());
                     }
                 });
-            });
+            },false);
         });
 
 
@@ -219,8 +222,29 @@ public class DatabaseVerticle extends AbstractVerticle
                         handler.reply("Enbale to delete discovery Device");
                     }
                 });
-            });
+            },false);
         });
+
+
+        eventBus.localConsumer(Constants.MONITOR_DEVICE_INFO,handler->
+        {
+            vertx.executeBlocking(blockingHandler->
+            {
+                monitorDeviceInfo(handler.body().toString()).onComplete(result->
+                {
+                    JsonObject resultInfo  = monitorDeviceInfo(handler.body().toString()).result();
+
+                    System.out.println("Result Info "+resultInfo);
+
+                   if(monitorDeviceInfo(handler.body().toString()).succeeded())
+                   {
+                       handler.reply(resultInfo);
+                   }
+                });
+            },false);
+        });
+
+
 
         eventBus.localConsumer(Constants.DELETE_MONITOR_DEVICE,handler->
         {
@@ -239,7 +263,7 @@ public class DatabaseVerticle extends AbstractVerticle
                        handler.reply("Enbale to delete Monitor Device");
                    }
                });
-           });
+           },false);
         });
 
 
@@ -269,7 +293,7 @@ public class DatabaseVerticle extends AbstractVerticle
                         }
                     });
                 });
-            });
+            },false);
 
         });
 
@@ -318,11 +342,84 @@ public class DatabaseVerticle extends AbstractVerticle
                         handler.reply("Device not discovered");
                     }
                 });
-            });
+            },false);
         });
 
+        vertx.setPeriodic(20000,handler->
+        {
+            eventBus.publish("updates.data",dashBoardDataLoad().result());
+        });
 
     }
+
+
+
+    private Future<HashMap<String,List<Map<String,Object>>>> dashBoardDataLoad()
+    {
+        Promise<HashMap<String,List<Map<String,Object>>>> promise = Promise.promise();
+
+        HashMap<String,List<Map<String,Object>>> dashBoardData = new HashMap<>();
+
+        vertx.executeBlocking(blockingHandler->
+        {
+            Connection connection = connectionPool.getConnection();
+
+            Operations operations = new Operations(connection);
+
+            try
+            {
+                String query = "SELECT m.ipaddress, MAX(p.METRICVALUE) AS memory FROM POLLING_TABLE p, MONITOR_TABLE m WHERE p.metricType = 'disk.used.percentage' AND p.timestamp >= NOW() - INTERVAL '5' MINUTE AND p.IPADDRESS = m.IPADDRESS GROUP BY p.ipaddress ORDER BY memory DESC LIMIT 5;";
+
+                List<Map<String,Object>> map = operations.selectQuery(query);
+
+                System.out.println(map);
+
+                dashBoardData.put("memory",map);
+
+                System.out.println("DashBorad Data "+ dashBoardData );
+
+                map = null;
+
+                map = operations.selectQuery("SELECT m.ipaddress, MAX(p.METRICVALUE) AS disk FROM POLLING_TABLE p, MONITOR_TABLE m WHERE p.metricType = 'disk.used.percentage' AND p.timestamp >= NOW() - INTERVAL '5' MINUTE AND p.IPADDRESS = m.IPADDRESS GROUP BY p.ipaddress ORDER BY disk DESC LIMIT 5;");
+
+
+                dashBoardData.put("disk",map);
+
+                map = null;
+
+                map = operations.selectQuery("SELECT m.ipaddress, MAX(p.METRICVALUE) AS cpu FROM POLLING_TABLE p, MONITOR_TABLE m WHERE p.metricType = 'cpu.idle.percentage' AND p.timestamp >= NOW() - INTERVAL '5' MINUTE AND p.IPADDRESS = m.IPADDRESS GROUP BY p.ipaddress ORDER BY cpu DESC LIMIT 5;");
+
+                dashBoardData.put("cpu",map);
+
+                map = null;
+
+                map = operations.selectQuery("SELECT COUNT(CASE WHEN STATUS='Up' THEN 1 END) as UP,COUNT(CASE WHEN STATUS='Down' THEN 1 END) as DOWN FROM (SELECT MONITOR_TABLE.DEVICEID, MONITOR_TABLE.IPADDRESS, MONITOR_TABLE.TYPE,MONITOR_TABLE.NAME, AVAILABILITY_TABLE.STATUS FROM MONITOR_TABLE INNER JOIN AVAILABILITY_TABLE ON MONITOR_TABLE.IPADDRESS = AVAILABILITY_TABLE.IPADDRESS ORDER BY AVAILABILITY_TABLE.TIMESTAMP DESC lIMIT (SELECT COUNT(IPADDRESS) FROM MONITOR_TABLE))");
+
+                dashBoardData.put("status",map);
+
+
+
+                System.out.println("DashBorad Data 3"+ dashBoardData );
+
+            }
+            catch (Exception exception)
+            {
+                promise.fail("Some error in fetching the dash board data");
+
+                exception.printStackTrace();
+            }
+            finally
+            {
+                connectionPool.releaseConnection(connection);
+            }
+        });
+
+        promise.complete(dashBoardData);
+
+        System.out.println(dashBoardData);
+        return promise.future();
+    }
+
 
     private Future<Boolean> DeleteDevice(String deviceID)
     {
@@ -506,6 +603,53 @@ public class DatabaseVerticle extends AbstractVerticle
     }
 
 
+    private Future<JsonObject> monitorDeviceInfo(String deviceId)
+    {
+        Promise<JsonObject> promise = Promise.promise();
+
+        JsonObject result = new JsonObject();
+
+        Connection connection = connectionPool.getConnection();
+
+        String query = "SELECT P.METRICTYPE,P.METRICVALUE FROM POLLING_TABLE P WHERE P.DEVICEID=? AND P.METRICTYPE IN ('cpu.user.percentage','system.name','uptime','disk.used.percentage','memory.used.percentage') AND P.TIMESTAMP = (SELECT MAX(TIMESTAMP) FROM POLLING_TABLE WHERE DEVICEID=? AND METRICTYPE = P.METRICTYPE)";
+
+        try ( PreparedStatement statement = connection.prepareStatement(query) )
+        {
+
+            statement.setObject(1,Integer.parseInt(deviceId));
+
+            statement.setObject(2,Integer.parseInt(deviceId));
+
+            ResultSet resultSet = statement.executeQuery();
+
+            ResultSetMetaData metaData = resultSet.getMetaData();
+
+            int columnCount = metaData.getColumnCount();
+
+            while (resultSet.next())
+            {
+                Map<String, Object> row = new HashMap<>();
+
+                for (int iterator = 1; iterator <= columnCount; iterator++)
+                {
+                    row.put(metaData.getColumnName(iterator), resultSet.getObject(iterator));
+                }
+            }
+
+            promise.complete(result);
+        }
+        catch (Exception exception)
+        {
+            exception.printStackTrace();
+        }
+
+        System.out.println("Result "+result);
+
+        return promise.future();
+    }
+
+
+
     private Future<List<Map<String,Object>>> loadMonitorData()
     {
         Promise<List<Map<String,Object>>> promise = Promise.promise();
@@ -534,8 +678,6 @@ public class DatabaseVerticle extends AbstractVerticle
                 {
                     row.put(metaData.getColumnName(iterator), resultSet.getObject(iterator));
                 }
-
-                System.out.println("row "+row);
                 resultList.add(row);
             }
             promise.complete(resultList);
@@ -579,7 +721,7 @@ public class DatabaseVerticle extends AbstractVerticle
 
             columns.add("PROVISION");
 
-            allData = operations.select("DISCOVERY_TABLE",columns);
+            allData = operations.selectwithWhere("DISCOVERY_TABLE",columns,"");
 
             promise.complete(allData);
 
@@ -613,7 +755,7 @@ public class DatabaseVerticle extends AbstractVerticle
 
             columns.add("IPADDRESS");
 
-            List<Map<String, Object>> selectResult = operations.select("MONITOR_TABLE",columns);
+            List<Map<String, Object>> selectResult = operations.selectwithWhere("MONITOR_TABLE",columns,"");
 
             for(int index=0;index<selectResult.size();index++)
             {
@@ -822,8 +964,6 @@ public class DatabaseVerticle extends AbstractVerticle
 
             for (JsonNode jsonObject : jsonArray)
             {
-                System.out.println("IN FOR LOOP NOR NODE    -----------------"+jsonObject);
-
                 batchExecute(jsonObject);
             }
             promise.complete(true);

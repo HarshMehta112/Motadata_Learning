@@ -23,7 +23,7 @@ public class Constants {
 
     public static final String RUN_DISCOVERY_SPAWN_PEROCESS = "discoverySpawn";
 
-    public static final int AVAILIBILITY_POLLING_TIME = 1002000;
+    public static final int AVAILIBILITY_POLLING_TIME = 10020000;
 
     public static final int SSH_POLLING_TIME = 100000000;
 
@@ -42,4 +42,6 @@ public class Constants {
     public static final String LOAD_MONITOR_DEVICE = "loadMonitorDevices";
 
     public static final String DELETE_MONITOR_DEVICE = "deleteMonitorDevice";
+
+    public static final String MONITOR_DEVICE_INFO = "deviceMonitorInfo";
 }

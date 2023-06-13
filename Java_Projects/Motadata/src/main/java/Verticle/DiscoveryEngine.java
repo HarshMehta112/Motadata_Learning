@@ -2,6 +2,9 @@ package Verticle;
 
 import Utils.Constants;
 import Utils.SpawnProcess;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.eventbus.EventBus;
@@ -33,15 +36,28 @@ public class DiscoveryEngine extends AbstractVerticle
             {
                 vertx.executeBlocking(blockingHandler->
                 {
-                    System.out.println(Thread.currentThread().getName());
+                    JsonNode discoveryResultFromPlugin = SpawnProcess.spwanProcess(inputArray);
 
-                    JsonObject discoveryResult = SpawnProcess.spwanProcessForDiscovery(inputArray);
+                    ObjectMapper mapper = new ObjectMapper();
 
-                    System.out.println(discoveryResult.getString(deviceDetails.getString("ip")));
+                    JsonNode element = discoveryResultFromPlugin.elements().next();
 
-                    if(discoveryResult.getString(deviceDetails.getString("ip")).equals("success"))
+                    String jsonString = null;
+
+                    try
+                    {
+                        jsonString = mapper.writeValueAsString(element);
+                    }
+                    catch (JsonProcessingException exception)
+                    {
+                        exception.printStackTrace();
+                    }
+
+                    if(jsonString.equals("\"success\""))
                     {
                         handler.reply(deviceDetails.getString("id"));
+
+                        System.out.println(deviceDetails.getString("id"));
                     }
                     else
                     {

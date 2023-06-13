@@ -179,7 +179,6 @@ var discoveryhelper = {
 
     validate: function (name, ip, type, username, password)
     {
-        let ipformat = /^(25[0-5]|2[0-4][0-9]|[01]?[1-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
         if (name == "")
         {
             discoveryhelper.customalert(".failure", "Enter Valid Name");
@@ -190,11 +189,7 @@ var discoveryhelper = {
             discoveryhelper.customalert(".failure", "Enter IP");
             return false;
         }
-        if (!ipformat.test(ip))
-        {
-            discoveryhelper.customalert(".failure", "Enter Valid IP");
-            return false;
-        }
+
 
         if (type != "ping" && (username == "" || password == ""))
         {
@@ -208,7 +203,7 @@ var discoveryhelper = {
     {
         if ($("#updatetype").val() == "ssh")
         {
-            $("#").show();updatesshdivision
+            $("#updatesshdivision").show();
 
         } else if ($("#type").val() == "ssh")
         {
@@ -278,8 +273,6 @@ var discoverycallback = {
         var beforeEditip = row.find("td:nth-child(3)").text();
 
         var beforeEdittype = row.find("td:nth-child(4)").text();
-
-        var beforeEdittag = row.find("td:nth-child(5)").text();
 
         let id = beforeEditid;
 
